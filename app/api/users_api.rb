@@ -4,9 +4,7 @@ class UsersAPI < Grape::API
       optional :sort, type: String, default: 'created_at'
     end
     get do
-      @articles = Article.all
-      # {"test": "test"}
-      @articles
+     User.all
     end
   end
 end
