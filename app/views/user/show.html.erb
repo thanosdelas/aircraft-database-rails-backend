@@ -1,0 +1,12 @@
+<h2>User Details Page</h2>
+<pre>
+===========================================
+email: <%= @user.email %>
+username: <%= @user.username %>
+created_at: <%= @user.created_at %>
+updated_at: <%= @user.updated_at %>
+===========================================
+</pre>
+
+<%= link_to 'Root', root_path %>
+<%= link_to 'Log Out', logout_path %>
