@@ -66,6 +66,8 @@ end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem 'rspec'
+  gem 'simplecov'
   gem "capybara"
   gem "selenium-webdriver"
 end
