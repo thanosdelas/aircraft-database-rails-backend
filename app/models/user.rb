@@ -12,6 +12,6 @@ class User < ApplicationRecord
   private
 
   def set_default_user_group_if_not_set
-    self.user_group ||= UserGroup.find_by('group' => 'admin')
+    self.user_group ||= UserGroup.find_by('group' => 'guest')
   end
 end
