@@ -10,11 +10,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_09_135748) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_09_193417) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "user_groups", force: :cascade do |t|
+    t.string "group"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group"], name: "index_user_groups_on_group", unique: true
+  end
+
+  #
+  # Default Hardcoded User Groups
+  #
+  [
+    {
+      id: 100,
+      group: 'admin'
+    },
+    {
+      id: 200,
+      group: 'user'
+    },
+    {
+      id: 300,
+      group: 'guest'
+    }
+  ].each do |group|
+    UserGroup.find_or_create_by!(id: group[:id], group: group[:group])
+  end
+
   create_table "users", force: :cascade do |t|
+    t.references :user_group, foreign_key: true
     t.string "email"
     t.string "username"
     t.string "password_digest"
