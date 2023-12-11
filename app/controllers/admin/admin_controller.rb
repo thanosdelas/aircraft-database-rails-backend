@@ -1,6 +1,10 @@
 module Admin
   class AdminController < ApplicationController
-    def is_admin?
+    before_action :authorize
+
+    private
+
+    def authorize
       redirect_to root_path unless user.is_admin?
     end
   end

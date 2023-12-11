@@ -8,5 +8,8 @@ updated_at: <%= @user.updated_at %>
 ===========================================
 </pre>
 
-<%= link_to 'Root', root_path %>
-<%= link_to 'Log Out', logout_path %>
+<ul>
+  <li><%= link_to 'Root', root_path %></li>
+  <li><%= link_to 'Admin Panel', admin_root_path %></li>
+  <li><%= link_to 'Log Out', logout_path %></li>
+</ul>

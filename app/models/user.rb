@@ -9,6 +9,10 @@ class User < ApplicationRecord
 
   before_validation :set_default_user_group_if_not_set
 
+  def is_admin?
+    self.user_group.group == 'admin'
+  end
+
   private
 
   def set_default_user_group_if_not_set
