@@ -1,0 +1,15 @@
+<h1>Users</h1>
+
+<a href="<%= admin_path %>">Back</a>
+
+<ul>
+  <% @users.each do |user| %>
+    <li>
+      <%= user.email %>
+      <a href="<%= admin_user_path(user) %>">View</a>
+      <%= link_to "Delete", admin_user_path(user), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+    </li>
+  <% end %>
+</ul>
+
+<%= link_to "Create User", new_admin_user_path %>
