@@ -53,4 +53,36 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_09_193417) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "opensky_network_raw", force: :cascade do |t|
+    t.string "icao24"
+    t.string "registration"
+    t.string "manufacturericao"
+    t.string "manufacturername"
+    t.string "model"
+    t.string "typecode"
+    t.string "serialnumber"
+    t.string "linenumber"
+    t.string "icaoaircrafttype"
+    t.string "operator"
+    t.string "operatorcallsign"
+    t.string "operatoricao"
+    t.string "operatoriata"
+    t.string "owner"
+    t.string "testreg"
+    t.string "registered"
+    t.string "reguntil"
+    t.string "status"
+    t.string "built"
+    t.string "firstflightdate"
+    t.string "seatconfiguration"
+    t.string "engines"
+    t.string "modes"
+    t.string "adsb"
+    t.string "acars"
+    t.string "notes"
+    t.string "categoryDescription"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
 end
