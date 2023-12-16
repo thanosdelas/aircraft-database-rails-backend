@@ -4,4 +4,5 @@ class BaseAPI < Grape::API
   include Config
 
   mount UsersAPI
+  mount AircraftAPI
 end
