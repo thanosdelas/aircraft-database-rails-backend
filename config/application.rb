@@ -16,6 +16,11 @@ module App
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w(assets tasks))
 
+    #
+    # Disable autoloading src folder
+    #
+    # Rails.autoloaders.main.ignore(Rails.root.join('app/src'))
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
