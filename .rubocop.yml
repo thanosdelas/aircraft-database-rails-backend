@@ -8,6 +8,7 @@ AllCops:
   Exclude:
     - 'Gemfile'
     - 'Rakefile'
+    - 'config.ru'
     - 'db/**/*'
     - 'lib/**/*'
     - 'config/**/*'
@@ -34,3 +35,12 @@ Style/Documentation:
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+Naming/VariableNumber:
+  Enabled: false
+
+Layout/FirstHashElementIndentation:
+  Enabled: false
+
+Lint/AmbiguousBlockAssociation:
+  AllowedPatterns: ['change']

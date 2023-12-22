@@ -17,7 +17,7 @@ module Services
     private
 
     def private_key
-      OpenSSL::PKey::EC.new(File.read("#{Rails.root}/tmp/openssl_keys/jwt-private.pem"))
+      OpenSSL::PKey::EC.new(File.read(Rails.root.join('tmp/openssl_keys/jwt-private.pem')))
     end
   end
 end

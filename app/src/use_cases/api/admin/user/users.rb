@@ -9,7 +9,7 @@ module UseCases
 
           private
 
-          def success(&response)
+          def success
             http_code = 200
             data = {
               status: 'ok',

@@ -1,13 +1,13 @@
 require 'rails_helper'
 
-describe Admin::UsersAPI do
+RSpec.describe Admin::UsersAPI do
   include Rack::Test::Methods
 
   let(:path) { '/api/admin/users' }
 
   describe 'GET /api/admin/users' do
     let(:params) { {} }
-    let(:endpoint) { "#{path}" }
+    let(:endpoint) { path }
 
     context 'when users can be retrieved' do
       let(:user_1) do
@@ -38,7 +38,7 @@ describe Admin::UsersAPI do
 
   describe 'POST /api/admin/users' do
     let(:params) { {} }
-    let(:endpoint) { "#{path}" }
+    let(:endpoint) { path }
     let(:email) { 'test@example.com' }
     let(:password) { 'test' }
 
@@ -94,7 +94,7 @@ describe Admin::UsersAPI do
           expect(last_response.status).to eq(422)
           expect(last_response.body).to eq({
             status: 'failed',
-            message: 'Could not create user',
+            message: 'Could not create user'
           }.to_json)
         end
       end

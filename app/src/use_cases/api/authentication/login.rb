@@ -13,16 +13,14 @@ module UseCases
         end
 
         def dispatch(&response)
-          if valid_user? && generate_access_token?
-            return success(&response)
-          end
+          return success(&response) if valid_user? && generate_access_token?
 
           error(&response)
         end
 
         private
 
-        def success(&response)
+        def success
           http_code = 201
           data = {
             status: 'ok',
@@ -35,7 +33,7 @@ module UseCases
           yield http_code, data
         end
 
-        def error(&response)
+        def error
           http_code = 401
           data = {
             status: 'failed',

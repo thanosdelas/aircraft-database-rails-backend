@@ -5,7 +5,7 @@ module Admin
     private
 
     def authorize
-      redirect_to root_path unless user.is_admin?
+      redirect_to root_path unless user.admin?
     end
   end
 end

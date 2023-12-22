@@ -1,3 +1,3 @@
 class Aircraft < ApplicationRecord
-  self.table_name = "aircraft"
+  self.table_name = 'aircraft'
 end

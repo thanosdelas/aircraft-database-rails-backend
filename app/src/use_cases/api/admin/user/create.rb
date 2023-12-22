@@ -19,7 +19,7 @@ module UseCases
 
           private
 
-          def success(&response)
+          def success
             http_code = 201
             data = {
               status: 'ok',
@@ -30,7 +30,7 @@ module UseCases
             yield http_code, data
           end
 
-          def error(&response)
+          def error
             http_code = 422
             data = {
               status: 'failed',

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AuthenticationAPI do
+RSpec.describe AuthenticationAPI do
   include Rack::Test::Methods
 
   let(:path) { '/api/authentication' }
@@ -83,7 +83,7 @@ describe AuthenticationAPI do
       }
     end
 
-    let(:private_key) { OpenSSL::PKey::EC.new(File.read("#{Rails.root}/tmp/openssl_keys/jwt-private.pem")) }
+    let(:private_key) { OpenSSL::PKey::EC.new(File.read(Rails.root.join('tmp/openssl_keys/jwt-private.pem'))) }
     let(:access_token) do
       JWT.encode payload, private_key, 'ES256'
     end
@@ -91,7 +91,7 @@ describe AuthenticationAPI do
     context 'when user authentication is successful' do
       let(:params) do
         {
-          access_token: access_token,
+          access_token: access_token
         }
       end
 
@@ -112,7 +112,7 @@ describe AuthenticationAPI do
       context 'because access token is invalid' do
         let(:params) do
           {
-            access_token: 'INVALID',
+            access_token: 'INVALID'
           }
         end
 
