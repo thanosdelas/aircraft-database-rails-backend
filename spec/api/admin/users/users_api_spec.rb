@@ -95,8 +95,8 @@ RSpec.describe Admin::UsersAPI do
 
           expect(last_response.status).to eq(422)
           expect(last_response.body).to eq({
-            status: 'failed',
-            message: 'Could not create user'
+            status: 'error',
+            messages: []
           }.to_json)
         end
       end

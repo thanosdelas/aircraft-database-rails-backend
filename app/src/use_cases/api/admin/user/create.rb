@@ -4,15 +4,21 @@ module UseCases
   module API
     module Admin
       module User
-        class Create
+        class Create < ::UseCases::API::Base
+          attr_reader :email, :password
+
           def initialize(email:, password:)
+            super()
+            @http_code = 422
+
             @email = email
             @password = password
           end
 
           def dispatch(&response)
-            return error(&response) if !verify_email?
-            return error(&response) if !verify_password?
+            ensure_email_is_provided?
+            ensure_password_is_provided?
+            return error(&response) if errors?
 
             return success(&response) if create_user?
 
@@ -21,46 +27,32 @@ module UseCases
 
           private
 
-          def success
-            http_code = 201
-            data = {
-              status: 'ok',
-              message: 'Sucessfully created user',
-              data: @user
-            }
-
-            yield http_code, data
-          end
-
-          def error
-            http_code = 422
-            data = {
-              status: 'failed',
-              message: 'Could not create user'
-            }
-
-            yield http_code, data
-          end
-
           def create_user?
-            @user = ::User.new
-            @user.email = @email
-            @user.password = @password
+            user = ::User.new
+            user.email = @email
+            user.password = @password
 
-            return true if @user.save
+            unless user.save
+              add_error(code: :failed, message: 'Could not create user')
+              return false
+            end
 
-            false
+            @http_code = 201
+            @response_data = user
+            true
           end
 
-          def verify_email?
+          def ensure_email_is_provided?
             return true if @email.present?
 
+            add_error(code: :missing, message: 'Email must be provided', field: :email)
             false
           end
 
-          def verify_password?
+          def ensure_password_is_provided?
             return true if @password.present?
 
+            add_error(code: :missing, message: 'Password must be provided', field: :email)
             false
           end
         end
