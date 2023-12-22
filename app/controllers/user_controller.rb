@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserController < AuthController
   def delete
     reset_session

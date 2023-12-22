@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AuthenticationAPI < BaseAPI
   resource :authentication do
     params do

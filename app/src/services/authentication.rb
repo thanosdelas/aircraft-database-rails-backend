@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Services
   class Authentication
     attr_reader :access_token

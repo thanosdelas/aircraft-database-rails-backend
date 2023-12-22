@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LoginController < ApplicationController
   before_action :redirect_if_logged_in?
 
