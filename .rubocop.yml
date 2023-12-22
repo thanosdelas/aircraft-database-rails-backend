@@ -1,0 +1,36 @@
+---
+
+require:
+  - rubocop-rails
+
+AllCops:
+  NewCops: disable
+  Exclude:
+    - 'Gemfile'
+    - 'Rakefile'
+    - 'db/**/*'
+    - 'lib/**/*'
+    - 'config/**/*'
+    - 'script/**/*'
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'gemfiles/**/*'
+    - 'bin/{rails,rake}'
+    - !ruby/regexp /old_and_unused\.rb$/
+
+Metrics/BlockLength:
+  Max: 150
+  Exclude:
+    - spec/**/*
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
+Style/NegatedIf:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
