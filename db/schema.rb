@@ -51,6 +51,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_09_193417) do
     t.string "last_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_email_on_users", unique: true
+    t.index ["username"], name: "index_username_on_users", unique: true
   end
 
   create_table "opensky_network_raw", force: :cascade do |t|
