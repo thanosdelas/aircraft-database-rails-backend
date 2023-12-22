@@ -15,4 +15,8 @@ class BaseAPI < Grape::API
   mount UsersAPI
   mount AuthenticationAPI
   mount AircraftAPI
+
+  namespace :admin do
+    mount Admin::UsersAPI
+  end
 end
