@@ -17,7 +17,11 @@ module Middleware
     private
 
     def verify_token(request)
-      verify_token = ::UseCases::API::Authentication::VerifyAccessToken.new(access_token: request.headers['token'])
+      access_token = request.headers['Authorization'].sub('Bearer ', '')
+
+      return false unless access_token.present?
+
+      verify_token = ::UseCases::API::Authentication::VerifyAccessToken.new(access_token: access_token)
 
       verify_token.dispatch do |http_status, data|
         return true if data[:status] == 'ok'
