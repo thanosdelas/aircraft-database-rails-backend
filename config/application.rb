@@ -6,6 +6,8 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require_relative '../middleware/authentication'
+
 module App
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -15,6 +17,11 @@ module App
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w(assets tasks))
+
+    #
+    # Configure authentication middleware for restricted areas
+    #
+    config.middleware.use Middleware::VerifyToken
 
     #
     # Disable autoloading src folder
