@@ -5,27 +5,11 @@ require 'rails_helper'
 RSpec.describe Admin::UsersAPI do
   include Rack::Test::Methods
 
-  let(:user) do
-    User.new(id: 9999, email: 'test@example.com', password: 'test', user_group_id: 100)
-  end
-  let(:payload) do
-    {
-      sub: user.id
-    }
-  end
-  let(:private_key) { OpenSSL::PKey::EC.new(File.read(Rails.root.join('tmp/openssl_keys/jwt-private.pem'))) }
-  let(:access_token) do
-    JWT.encode payload, private_key, 'ES256'
-  end
-  let(:headers) do
-    { 'Authorization' => "Bearer #{access_token}" }
+  before do
+    authenticate_admin_user
   end
 
   let(:path) { '/api/admin/users' }
-
-  before do
-    header('Authorization', "Bearer #{access_token}")
-  end
 
   describe 'GET /api/admin/users' do
     let(:params) { {} }

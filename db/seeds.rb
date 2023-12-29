@@ -11,18 +11,27 @@
 #
 
 [
+  { id: 100, group: 'admin' },
+  { id: 200, group: 'user' },
+  { id: 300, group: 'guest' },
+].each do |group|
+  UserGroup.find_or_create_by!(id: group[:id], group: group[:group])
+end
+
+# [
+#   { id: 111, model: 'Lockheed Martin' },
+#   { id: 222, model: 'Rockwell International' },
+#   { id: 333, model: 'McDonnell Douglas' },
+# ].each do |aircraft|
+#   Aircraft.find_or_create_by!(id: aircraft[:id], model: aircraft[:model])
+# end
+
+[
   {
-    email: 'test1@example.com',
-    password: 'test'
-  },
-  {
-    email: 'test2@example.com',
-    password: 'test'
-  },
-  {
-    email: 'test3@example.com',
-    password: 'test'
-  },
+    email: 'test@example.com',
+    password: 'test',
+    user_group_id: 100
+  }
 ].each do |user|
-  User.create(email: user[:email], password: user[:password])
+  User.create(email: user[:email], password: user[:password], user_group_id: user[:user_group_id])
 end
