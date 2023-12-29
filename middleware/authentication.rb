@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Middleware
   class VerifyToken
     def initialize(app)
@@ -7,9 +9,7 @@ module Middleware
     def call(env)
       request = ActionDispatch::Request.new(env)
 
-      if request.path.include?('api/admin') && !verify_token(request)
-        return unauthorized_response
-      end
+      return unauthorized_response if request.path.include?('api/admin') && !verify_token(request)
 
       @app.call(env)
     end
@@ -17,15 +17,15 @@ module Middleware
     private
 
     def verify_token(request)
-      return false unless request.headers['Authorization'].present?
+      return false if request.headers['Authorization'].blank?
 
       access_token = request.headers['Authorization'].sub('Bearer ', '')
 
-      return false unless access_token.present?
+      return false if access_token.blank?
 
       verify_token = ::UseCases::API::Authentication::VerifyAccessToken.new(access_token: access_token)
 
-      verify_token.dispatch do |http_status, data|
+      verify_token.dispatch do |_http_status, data|
         return true if data[:status] == 'ok'
       end
 
