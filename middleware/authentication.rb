@@ -17,6 +17,8 @@ module Middleware
     private
 
     def verify_token(request)
+      return false unless request.headers['Authorization'].present?
+
       access_token = request.headers['Authorization'].sub('Bearer ', '')
 
       return false unless access_token.present?
