@@ -80,7 +80,7 @@ module UseCases
                   create_image = AircraftImage.new(
                     aircraft_id: @aircraft_id,
                     url: image['url'],
-                    filename: image['title']
+                    filename: image['filename']
                   )
 
                   raise ActiveRecord::Rollback, 'Could not save images' unless create_image.save

@@ -5,16 +5,21 @@ require 'rails_helper'
 RSpec.describe Admin::AircraftAPI do
   include Rack::Test::Methods
 
+  let(:aircraft_id) { '111' }
+  let(:aircraft) do
+    ::Aircraft.new(id: aircraft_id, model: 'Test aircraft model')
+  end
+
   let(:path) { '/api/admin/aircraft/images' }
 
   before do
+    aircraft.save!
     authenticate_admin_user
   end
 
   describe 'PUT /api/admin/aircraft/images' do
     let(:params) { {} }
     let(:endpoint) { path }
-    let(:aircraft_id) { 'aircraft_id' }
     let(:images) do
       [
         {
@@ -31,7 +36,7 @@ RSpec.describe Admin::AircraftAPI do
     context 'when images can be updated' do
       let(:params) do
         {
-          aircraft_id: '111',
+          aircraft_id: aircraft_id,
           images: images
         }
       end

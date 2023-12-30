@@ -7,18 +7,31 @@ module Admin
         Aircraft.all
       end
 
-      params do
-        requires :aircraft_id, type: String
-        requires :images, type: Array
-      end
-      put 'images' do
-        response = ::UseCases::API::Admin::Aircraft::Images::Update.new(
-          aircraft_id: params[:aircraft_id],
-          images: params[:images]
-        )
+      resource :images do
+        params do
+          requires :aircraft_id, type: String
+        end
+        get do
+          response = ::UseCases::API::Admin::Aircraft::Images::Fetch.new(aircraft_id: params[:aircraft_id])
 
-        response.dispatch do |http_code, data|
-          render_response(http_code: http_code, data: data)
+          response.dispatch do |http_code, data|
+            render_response(http_code: http_code, data: data)
+          end
+        end
+
+        params do
+          requires :aircraft_id, type: String
+          requires :images, type: Array
+        end
+        put do
+          response = ::UseCases::API::Admin::Aircraft::Images::Update.new(
+            aircraft_id: params[:aircraft_id],
+            images: params[:images]
+          )
+
+          response.dispatch do |http_code, data|
+            render_response(http_code: http_code, data: data)
+          end
         end
       end
     end
