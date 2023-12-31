@@ -7,16 +7,14 @@ module Admin
         optional :search_term, type: String
       end
       get do
-        puts params[:search_term].inspect
-
         if params[:search_term].present?
           #
           # TODO: Ensure the following is safe for SQL injection.
           #
           fetch_data = ::Aircraft.where(
-            "LOWER(model) LIKE :search_term",
+            'LOWER(model) LIKE :search_term',
             {
-              search_term: "%#{ ::Aircraft.sanitize_sql_like(params[:search_term]) }%"
+              search_term: "%#{::Aircraft.sanitize_sql_like(params[:search_term])}%"
             }
           )
         else

@@ -68,7 +68,7 @@ module UseCases
 
             # TODO: - Collect and return errors
             #       - Avoid n+1 queries
-            def save_images? # rubocop:disable Metrics/MethodLength
+            def save_images? # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
               ::AircraftImage.transaction do
                 image_urls_to_delete.each do |image_url|
                   ::AircraftImage.where(url: image_url).destroy_all
@@ -82,6 +82,8 @@ module UseCases
                     url: image['url'],
                     filename: image['filename']
                   )
+
+                  create_image.description = image['description'] if image['description'].present?
 
                   raise ActiveRecord::Rollback, 'Could not save images' unless create_image.save
                 end

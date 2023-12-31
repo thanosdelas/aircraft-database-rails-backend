@@ -42,5 +42,8 @@ Naming/VariableNumber:
 Layout/FirstHashElementIndentation:
   Enabled: false
 
+Style/ConditionalAssignment:
+  Enabled: false
+
 Lint/AmbiguousBlockAssociation:
   AllowedPatterns: ['change']
