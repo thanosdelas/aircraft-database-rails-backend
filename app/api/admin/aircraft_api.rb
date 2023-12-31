@@ -3,12 +3,31 @@
 module Admin
   class AircraftAPI < Grape::API
     resource :aircraft do
+      params do
+        optional :search_term, type: String
+      end
       get do
+        puts params[:search_term].inspect
+
+        if params[:search_term].present?
+          #
+          # TODO: Ensure the following is safe for SQL injection.
+          #
+          fetch_data = ::Aircraft.where(
+            "LOWER(model) LIKE :search_term",
+            {
+              search_term: "%#{ ::Aircraft.sanitize_sql_like(params[:search_term]) }%"
+            }
+          )
+        else
+          fetch_data = ::Aircraft.all
+        end
+
         http_code = 200
         data = {
           status: 'ok',
           message: 'Sucessfully fetched images',
-          data: ::Aircraft.all
+          data: fetch_data
         }
 
         render_response(http_code: http_code, data: data)
