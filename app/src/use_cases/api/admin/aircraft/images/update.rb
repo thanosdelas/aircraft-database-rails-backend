@@ -6,9 +6,13 @@ module UseCases
       module Aircraft
         module Images
           class Update
+            attr_reader :errors
+
             def initialize(aircraft_id:, images:)
               @aircraft_id = aircraft_id
               @images = images
+
+              @errors = []
             end
 
             def dispatch(&response)
@@ -84,12 +88,18 @@ module UseCases
                   )
 
                   create_image.description = image['description'] if image['description'].present?
-
-                  raise ActiveRecord::Rollback, 'Could not save images' unless create_image.save
+                  create_image.save!
                 end
               end
 
               true
+            rescue ActiveRecord::RecordInvalid => error
+              @errors.push({
+                code: 'error',
+                message: error.message
+              })
+
+              return false
             end
 
             def verify_aircraft_id?

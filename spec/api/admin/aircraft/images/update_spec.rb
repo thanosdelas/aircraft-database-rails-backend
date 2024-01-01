@@ -24,11 +24,11 @@ RSpec.describe Admin::AircraftAPI do
       [
         {
           url: 'image/test_image_1',
-          title: 'test_image_1'
+          filename: 'test_image_1'
         },
         {
           url: 'image/test_image_2',
-          title: 'test_image_2'
+          filename: 'test_image_2'
         }
       ]
     end
@@ -57,12 +57,12 @@ RSpec.describe Admin::AircraftAPI do
           expect(updated_images.count).to eq(2)
           expect(updated_images[0]).to have_attributes(
             url: images[0][:url],
-            filename: images[0][:title],
+            filename: images[0][:filename],
             aircraft_id: params[:aircraft_id].to_i
           )
           expect(updated_images[1]).to have_attributes(
             url: images[1][:url],
-            filename: images[1][:title],
+            filename: images[1][:filename],
             aircraft_id: params[:aircraft_id].to_i
           )
         end
@@ -94,14 +94,47 @@ RSpec.describe Admin::AircraftAPI do
           expect(updated_images.count).to eq(2)
           expect(updated_images[0]).to have_attributes(
             url: images[0][:url],
-            filename: images[0][:title],
+            filename: images[0][:filename],
             aircraft_id: params[:aircraft_id].to_i
           )
           expect(updated_images[1]).to have_attributes(
             url: images[1][:url],
-            filename: images[1][:title],
+            filename: images[1][:filename],
             aircraft_id: params[:aircraft_id].to_i
           )
+        end
+      end
+    end
+
+    context 'when images cannot be updated' do
+      let(:params) do
+        {
+          aircraft_id: aircraft_id,
+          images: images
+        }
+      end
+
+      context 'because at least one image is missing filename attribute' do
+        let(:images) do
+          [
+            {
+              url: 'image/test_image_1',
+              filename: 'test_image_1'
+            },
+            {
+              url: 'image/test_image_2'
+            }
+          ]
+        end
+
+        it 'does not update images and responds with 422' do
+          put endpoint, params
+
+          expect(last_response.status).to eq(422)
+          expect(last_response.body).to eq({ status: 'failed', message: 'Could not update images' }.to_json)
+
+          updated_images = ::AircraftImage.all
+          expect(updated_images).to eq([])
         end
       end
     end
