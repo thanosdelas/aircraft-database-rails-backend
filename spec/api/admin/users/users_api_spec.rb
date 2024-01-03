@@ -36,9 +36,8 @@ RSpec.describe Admin::UsersAPI do
         expect(last_response.status).to eq(200)
 
         json = JSON.parse(last_response.body)
-
-        expect(json['data']['users'].count).to eq(2)
-        expect(json['data']['users'].pluck('id')).to eq([user_1.id, user_2.id])
+        expect(json['data'].count).to eq(2)
+        expect(json['data'].pluck('id')).to eq([user_1.id, user_2.id])
       end
     end
   end
@@ -101,7 +100,11 @@ RSpec.describe Admin::UsersAPI do
           expect(last_response.status).to eq(422)
           expect(last_response.body).to eq({
             status: 'error',
-            messages: []
+            errors: [{
+              code: :taken,
+              message: 'has already been taken',
+              field: 'email'
+            }]
           }.to_json)
         end
       end

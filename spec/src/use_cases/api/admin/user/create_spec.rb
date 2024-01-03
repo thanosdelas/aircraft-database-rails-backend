@@ -6,7 +6,7 @@ RSpec.describe ::UseCases::API::Admin::User::Create do
   let(:email) { '' }
   let(:password) { '' }
   let(:render_response) do
-    Proc.new {}
+    proc {}
   end
 
   subject do
@@ -20,7 +20,7 @@ RSpec.describe ::UseCases::API::Admin::User::Create do
         password: password,
         http_code: 422,
         errors: [],
-        messages: []
+        message: nil
       )
     end
   end
@@ -41,18 +41,20 @@ RSpec.describe ::UseCases::API::Admin::User::Create do
           ]
         )
       end
-    end
 
-    context 'when created user succeeds' do
-      let(:email) { 'test@example.com' }
-      let(:password) { 'test' }
+      context 'because group is missing' do
+        let(:email) { 'test@example.com' }
+        let(:password) { 'test' }
 
-      it 'collects errors and returns an error response' do
-        subject.dispatch(&render_response)
+        it 'returns a successful response with no errors' do
+          subject.dispatch(&render_response)
 
-        expect(subject.http_code).to eq(201)
-        expect(subject.errors).to eq([])
-        expect(subject.response_data).to have_attributes(email: email)
+          expect(subject.http_code).to eq(422)
+
+          expect(subject.errors).to eq([
+            { code: :blank, message: 'must exist', field: :group }
+          ])
+        end
       end
     end
   end

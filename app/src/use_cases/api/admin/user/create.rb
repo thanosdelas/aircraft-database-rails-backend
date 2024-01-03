@@ -9,31 +9,43 @@ module UseCases
 
           def initialize(email:, password:)
             super()
+
             @http_code = 422
 
             @email = email
             @password = password
           end
 
-          def dispatch(&response)
+          def dispatch(&response) # rubocop:disable Metrics/MethodLength
             ensure_email_is_provided?
             ensure_password_is_provided?
-            return error(&response) if errors?
 
-            return success(&response) if create_user?
+            if errors?
+              @http_code = 422
+              return error(&response)
+            end
 
+            if create_user?
+              @http_code = 201
+              return success(&response)
+            end
+
+            @http_code = 422
             error(&response)
           end
 
           private
 
-          def create_user?
+          def create_user? # rubocop:disable Metrics/MethodLength
             user = ::User.new
             user.email = @email
             user.password = @password
 
             unless user.save
-              add_error(code: :failed, message: 'Could not create user')
+              user.errors.each do |error|
+                add_error(code: error.type, message: error.message, field: error.attribute)
+              end
+
               return false
             end
 

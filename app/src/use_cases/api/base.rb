@@ -3,13 +3,13 @@
 module UseCases
   module API
     class Base
-      attr_reader :http_code, :response_data, :errors, :messages
+      attr_reader :http_code, :response_data, :message, :errors
 
       def initialize
         @http_code = nil
         @response_data = nil
         @errors = []
-        @messages = []
+        @message = nil
       end
 
       private
@@ -21,17 +21,20 @@ module UseCases
       end
 
       def error
-        response = { status: 'error', messages: @messages }
+        response = { status: 'error', errors: @errors }
 
         yield @http_code, response
       end
 
       def add_error(code:, message:, field: nil)
-        @errors.push({ code: code, message: message, field: field })
+        error = { code: code, message: message }
+        error[:field] = field unless field.nil?
+
+        @errors.push(error)
       end
 
       def errors?
-        @errors.length > 0
+        !@errors.empty?
       end
     end
   end

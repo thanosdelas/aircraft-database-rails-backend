@@ -39,9 +39,8 @@ RSpec.describe AuthenticationAPI do
         expect(last_response.status).to eq(201)
 
         json = JSON.parse(last_response.body)
-        expect(json['status']).to eq('ok')
+        expect(json['status']).to eq('success')
         expect(json['message']).to eq('Authentication was successfull')
-        expect(json['message']).to be_present
       end
     end
 
@@ -58,7 +57,12 @@ RSpec.describe AuthenticationAPI do
           post endpoint, params
 
           expect(last_response.status).to eq(401)
-          expect(last_response.body).to eq({ status: 'failed', message: 'Authentication failed' }.to_json)
+          expect(last_response.body).to eq({
+            status: 'error', errors: [{
+              code: 'failed',
+              message: 'Authentication failed'
+            }]
+          }.to_json)
         end
       end
 
@@ -109,7 +113,7 @@ RSpec.describe AuthenticationAPI do
         post endpoint, params
 
         json = JSON.parse(last_response.body)
-        expect(json['status']).to eq('ok')
+        expect(json['status']).to eq('success')
         expect(json['message']).to eq('Successfully verified token and user')
       end
     end
@@ -126,7 +130,12 @@ RSpec.describe AuthenticationAPI do
           post endpoint, params
 
           expect(last_response.status).to eq(422)
-          expect(last_response.body).to eq({ status: 'failed', message: 'Could not verify provided token' }.to_json)
+          expect(last_response.body).to eq({
+            status: 'error', errors: [{
+              code: 'failed',
+              message: 'Could not verify token'
+            }]
+          }.to_json)
         end
       end
 
