@@ -16,7 +16,7 @@ module UseCases
           @access_token = nil
         end
 
-        def dispatch(&response)
+        def dispatch(&response) # rubocop:disable Metrics/MethodLength
           if valid_user? && generate_access_token?
             @http_code = 201
             @message = 'Authentication was successfull'

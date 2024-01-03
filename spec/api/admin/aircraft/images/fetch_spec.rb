@@ -23,7 +23,7 @@ RSpec.describe Admin::AircraftAPI do
     ]
   end
 
-  let(:path) { '/api/admin/aircraft/images' }
+  let(:path) { "/api/admin/aircraft/#{aircraft.id}/images" }
 
   before do
     aircraft.save!
@@ -31,7 +31,7 @@ RSpec.describe Admin::AircraftAPI do
 
     images.each do |image|
       AircraftImage.new(
-        aircraft_id: params[:aircraft_id],
+        aircraft_id: aircraft_id,
         url: image[:url],
         filename: image[:title]
       ).save!
@@ -41,14 +41,8 @@ RSpec.describe Admin::AircraftAPI do
   describe 'GET /api/admin/aircraft/images' do
     let(:endpoint) { path }
 
-    let(:params) do
-      {
-        aircraft_id: aircraft_id
-      }
-    end
-
     it 'successfully retrieves all aircraft images' do
-      get endpoint, params
+      get endpoint
 
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
