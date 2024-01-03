@@ -5,40 +5,28 @@ module UseCases
     module Admin
       module Aircraft
         module Images
-          class Fetch
+          class Fetch < ::UseCases::API::Base
             def initialize(aircraft_id:)
+              super()
+
               @aircraft_id = aircraft_id
             end
 
             def dispatch(&response)
-              return error(&response) if !verify_aircraft_id? ||
-                                         !verify_aircraft_exists?
+              if !verify_aircraft_id? || !verify_aircraft_exists?
+                @http_code = 422 # Maybe 204 or 404?
+                add_error(code: :failed, message: 'Could not fetch images')
 
+                return error(&response)
+              end
+
+              @http_code = 200
+              @message = 'Sucessfully fetched images'
+              @response_data = ::AircraftImage.where(aircraft_id: @aircraft_id)
               success(&response)
             end
 
             private
-
-            def success
-              http_code = 200
-              data = {
-                status: 'ok',
-                message: 'Sucessfully fetched images',
-                data: ::AircraftImage.where(aircraft_id: @aircraft_id)
-              }
-
-              yield http_code, data
-            end
-
-            def error
-              http_code = 422
-              data = {
-                status: 'failed',
-                message: 'Could not fetch images'
-              }
-
-              yield http_code, data
-            end
 
             def verify_aircraft_id?
               return true if @aircraft_id.present?

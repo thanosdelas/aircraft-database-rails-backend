@@ -5,48 +5,41 @@ module UseCases
     module Admin
       module Aircraft
         module Images
-          class Update
+          class Update < ::UseCases::API::Base
             attr_reader :errors
 
             def initialize(aircraft_id:, images:)
+              super()
+
               @aircraft_id = aircraft_id
               @images = images
 
               @errors = []
             end
 
-            def dispatch(&response)
-              return error(&response) if !verify_aircraft_id? ||
-                                         !verify_images? ||
-                                         !verify_aircraft_exists?
+            def dispatch(&response) # rubocop:disable Metrics/MethodLength
+              if !verify_aircraft_id? || !verify_images? || !verify_aircraft_exists?
+                @http_code = 422
+                add_error(code: :failed, message: 'Could not update images')
 
-              return success(&response) if save_images?
+                return error(&response)
+              end
+
+              if save_images?
+                @http_code = 200
+                @message = 'Sucessfully updated images'
+                @response_data = ::AircraftImage.where(aircraft_id: @aircraft_id)
+
+                return success(&response)
+              end
+
+              @http_code = 422
+              add_error(code: :failed, message: 'Could not update images')
 
               error(&response)
             end
 
             private
-
-            def success
-              http_code = 200
-              data = {
-                status: 'ok',
-                message: 'Sucessfully updated images',
-                data: ::AircraftImage.where(aircraft_id: @aircraft_id)
-              }
-
-              yield http_code, data
-            end
-
-            def error
-              http_code = 422
-              data = {
-                status: 'failed',
-                message: 'Could not update images'
-              }
-
-              yield http_code, data
-            end
 
             def existing_images
               return @existing_images if instance_variable_defined?(:@existing_images)
