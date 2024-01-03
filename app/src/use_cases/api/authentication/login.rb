@@ -19,8 +19,10 @@ module UseCases
         def dispatch(&response)
           if valid_user? && generate_access_token?
             @http_code = 201
-            @response_data = @access_token
             @message = 'Authentication was successfull'
+            @response_data = {
+              access_token: @access_token
+            }
             return success(&response)
           end
 
