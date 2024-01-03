@@ -3,40 +3,29 @@
 module UseCases
   module API
     module Authentication
-      class VerifyAccessToken
+      class VerifyAccessToken < ::UseCases::API::Base
         attr_reader :status, :data
 
         def initialize(access_token:)
+          super()
+
           @access_token = access_token
         end
 
         def dispatch(&response)
-          return success(&response) if verify_access_token?
+          if verify_access_token?
+            @http_code = 201
+            @message = 'Successfully verified token and user'
 
+            return success(&response)
+          end
+
+          @http_code = 422
+          add_error(code: :failed, message: 'Could not verify token')
           error(&response)
         end
 
         private
-
-        def success
-          http_code = 201
-          data = {
-            status: 'ok',
-            message: 'Successfully verified token and user'
-          }
-
-          yield http_code, data
-        end
-
-        def error
-          http_code = 422
-          data = {
-            status: 'failed',
-            message: 'Could not verify provided token'
-          }
-
-          yield http_code, data
-        end
 
         def verify_access_token?
           authentication_service = ::Services::Authentication.new

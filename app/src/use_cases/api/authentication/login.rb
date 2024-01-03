@@ -3,10 +3,12 @@
 module UseCases
   module API
     module Authentication
-      class Login
+      class Login < ::UseCases::API::Base
         attr_reader :status, :data
 
         def initialize(email:, password:)
+          super()
+
           @email = email
           @password = password
 
@@ -15,35 +17,19 @@ module UseCases
         end
 
         def dispatch(&response)
-          return success(&response) if valid_user? && generate_access_token?
+          if valid_user? && generate_access_token?
+            @http_code = 201
+            @response_data = @access_token
+            @message = 'Authentication was successfull'
+            return success(&response)
+          end
 
+          @http_code = 401
+          add_error(code: :failed, message: 'Authentication failed')
           error(&response)
         end
 
         private
-
-        def success
-          http_code = 201
-          data = {
-            status: 'ok',
-            message: 'Authentication was successfull',
-            data: {
-              access_token: @access_token
-            }
-          }
-
-          yield http_code, data
-        end
-
-        def error
-          http_code = 401
-          data = {
-            status: 'failed',
-            message: 'Authentication failed'
-          }
-
-          yield http_code, data
-        end
 
         def valid_user?
           @user = User.find_by(email: @email)

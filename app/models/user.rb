@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  belongs_to :group, :class_name => 'UserGroup', foreign_key: 'user_group_id'
+  belongs_to :group, class_name: 'UserGroup', foreign_key: 'user_group_id', inverse_of: :users
 
   has_secure_password
 

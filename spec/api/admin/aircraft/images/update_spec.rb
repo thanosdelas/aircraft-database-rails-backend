@@ -131,7 +131,19 @@ RSpec.describe Admin::AircraftAPI do
           put endpoint, params
 
           expect(last_response.status).to eq(422)
-          expect(last_response.body).to eq({ status: 'failed', message: 'Could not update images' }.to_json)
+          expect(last_response.body).to eq({
+            status: 'error',
+            errors: [
+              {
+                code: :error,
+                message: "Validation failed: Filename can't be blank"
+              },
+              {
+                code: :failed,
+                message: 'Could not update images'
+              }
+            ]
+          }.to_json)
 
           updated_images = ::AircraftImage.all
           expect(updated_images).to eq([])
