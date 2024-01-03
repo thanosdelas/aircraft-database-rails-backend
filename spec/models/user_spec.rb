@@ -13,6 +13,10 @@ RSpec.describe User, type: :model do
     )
   end
 
+  before do
+    create_user_groups
+  end
+
   context 'when user can be created' do
     let(:email) { 'test@exmple.com' }
     let(:password) { 'test' }

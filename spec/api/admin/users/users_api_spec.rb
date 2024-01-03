@@ -6,6 +6,7 @@ RSpec.describe Admin::UsersAPI do
   include Rack::Test::Methods
 
   before do
+    create_user_groups
     authenticate_admin_user
   end
 

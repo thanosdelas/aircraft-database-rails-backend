@@ -21,12 +21,16 @@ RSpec.describe AuthenticationAPI do
         }
       end
 
+      let(:user_group) do
+        UserGroup.new(id: 100, group: 'admin')
+      end
+
       let(:user) do
-        User.new(email: params[:email], password: password)
+        User.new(email: params[:email], password: password, user_group: user_group)
       end
 
       before do
-        user.save
+        user.save!
       end
 
       it 'successfully creates an access token and responds with 201' do

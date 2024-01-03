@@ -2,7 +2,8 @@
 
 require 'byebug'
 require 'simplecov'
-require 'helpers/authentication'
+require 'helpers/user_helper'
+require 'helpers/authentication_helper'
 
 SimpleCov.start 'rails'
 
@@ -22,7 +23,8 @@ SimpleCov.start 'rails'
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
-  include Authentication
+  include UserHelper
+  include AuthenticationHelper
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
