@@ -18,5 +18,6 @@ class BaseAPI < Grape::API
 
   namespace :admin do
     mount Admin::UsersAPI
+    mount Admin::AircraftAPI
   end
 end

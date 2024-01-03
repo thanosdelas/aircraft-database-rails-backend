@@ -12,7 +12,7 @@ module Admin
 
     def new
       @user = User.new
-      @user.user_group = UserGroup.find_by(group: 'guest')
+      @user.group = UserGroup.find_by(group: 'guest')
 
       @user
     end

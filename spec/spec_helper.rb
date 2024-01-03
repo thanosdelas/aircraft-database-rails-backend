@@ -2,6 +2,8 @@
 
 require 'byebug'
 require 'simplecov'
+require 'helpers/user_helper'
+require 'helpers/authentication_helper'
 
 SimpleCov.start 'rails'
 
@@ -21,6 +23,9 @@ SimpleCov.start 'rails'
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+  include UserHelper
+  include AuthenticationHelper
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
@@ -94,4 +99,11 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+
+  #
+  # Seed the database before running RSpec suite
+  #
+  # config.before(:suite) do
+  #   Rails.application.load_seed
+  # end
 end

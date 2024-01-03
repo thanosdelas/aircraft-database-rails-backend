@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  belongs_to :user_group
+  belongs_to :group, :class_name => 'UserGroup', foreign_key: 'user_group_id'
 
   has_secure_password
 
@@ -12,12 +12,12 @@ class User < ApplicationRecord
   before_validation :set_default_user_group_if_not_set
 
   def admin?
-    user_group.group == 'admin'
+    group.group == 'admin'
   end
 
   private
 
   def set_default_user_group_if_not_set
-    self.user_group ||= UserGroup.find_by('group' => 'guest')
+    self.group ||= UserGroup.find_by('group' => 'guest')
   end
 end

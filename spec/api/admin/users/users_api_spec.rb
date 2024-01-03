@@ -5,6 +5,11 @@ require 'rails_helper'
 RSpec.describe Admin::UsersAPI do
   include Rack::Test::Methods
 
+  before do
+    create_user_groups
+    authenticate_admin_user
+  end
+
   let(:path) { '/api/admin/users' }
 
   describe 'GET /api/admin/users' do
