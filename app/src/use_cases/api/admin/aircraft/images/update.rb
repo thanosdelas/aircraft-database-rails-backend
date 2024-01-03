@@ -99,7 +99,7 @@ module UseCases
                 message: error.message
               })
 
-              return false
+              false
             end
 
             def verify_aircraft_id?
