@@ -41,6 +41,7 @@ RSpec.describe AuthenticationAPI do
         json = JSON.parse(last_response.body)
         expect(json['status']).to eq('success')
         expect(json['message']).to eq('Authentication was successfull')
+        expect(json['data']['access_token']).to be_present
       end
     end
 
