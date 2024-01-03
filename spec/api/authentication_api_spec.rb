@@ -26,7 +26,7 @@ RSpec.describe AuthenticationAPI do
       end
 
       let(:user) do
-        User.new(email: params[:email], password: password, user_group: user_group)
+        User.new(email: params[:email], password: password, group: user_group)
       end
 
       before do
