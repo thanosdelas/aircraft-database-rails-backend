@@ -5,7 +5,9 @@ class AircraftImage < ApplicationRecord
 
   belongs_to :aircraft, class_name: 'Aircraft'
 
-  validates :aircraft_id, presence: false, allow_nil: true
-  validates :url, allow_nil: true, uniqueness: true
-  validates :filename, presence: true, uniqueness: true
+  validates :aircraft_id, presence: false
+  validates :url, presence: true, allow_nil: false
+  validates :url, uniqueness: { scope: :aircraft_id, message: 'This url is already used for this aircraft' }
+
+  validates :filename, presence: true
 end

@@ -10,16 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_03_182522) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_04_202914) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "aircraft", force: :cascade do |t|
-    t.string "model"
+    t.string "model", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "featured_image"
     t.string "description"
+    t.string "snippet"
+    t.string "wikipedia_title"
+    t.boolean "wikipedia_info_collected", default: false
   end
 
   create_table "aircraft_images", force: :cascade do |t|
@@ -29,9 +32,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_03_182522) do
     t.bigint "aircraft_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["aircraft_id", "url"], name: "index_aircraft_images_on_url_and_aircraft_id", unique: true
     t.index ["aircraft_id"], name: "index_aircraft_images_on_aircraft_id"
-    t.index ["filename"], name: "index_aircraft_images_on_filename", unique: true
-    t.index ["url"], name: "index_aircraft_images_on_url", unique: true
+    t.index ["filename"], name: "index_aircraft_images_on_filename"
   end
 
   create_table "user_groups", force: :cascade do |t|
