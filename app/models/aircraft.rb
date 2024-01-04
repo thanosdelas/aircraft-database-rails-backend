@@ -3,5 +3,7 @@
 class Aircraft < ApplicationRecord
   self.table_name = 'aircraft'
 
-  has_many :aircraft_images, dependent: :restrict_with_error
+  has_many :images, class_name: 'AircraftImage', dependent: :restrict_with_error
+
+  validates :model, presence: true, allow_nil: false
 end
