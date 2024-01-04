@@ -17,7 +17,7 @@ module UseCases
               @errors = []
             end
 
-            def dispatch(&response) # rubocop:disable Metrics/MethodLength
+            def dispatch(&response)
               if !verify_aircraft_id? || !verify_images? || !verify_aircraft_exists?
                 @http_code = 422
                 add_error(code: :failed, message: 'Could not update images')

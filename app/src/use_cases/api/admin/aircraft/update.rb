@@ -15,7 +15,7 @@ module UseCases
             @errors = []
           end
 
-          def dispatch(&response) # rubocop:disable Metrics/MethodLength
+          def dispatch(&response)
             if !verify_aircraft_exists?
               @http_code = 422
               add_error(code: :not_found, message: 'Could not find aircraft')
