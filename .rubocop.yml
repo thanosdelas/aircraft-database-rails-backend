@@ -24,6 +24,15 @@ Metrics/BlockLength:
   Exclude:
     - spec/**/*
 
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/ClassLength:
+  Max: 128
+
+Layout/LineLength:
+  Max: 128
+
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
 
@@ -53,6 +62,3 @@ Layout/FirstArrayElementIndentation:
 
 Lint/AmbiguousBlockAssociation:
   AllowedPatterns: ['change']
-
-Layout/LineLength:
-  Max: 128
