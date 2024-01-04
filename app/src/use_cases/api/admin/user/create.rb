@@ -16,7 +16,7 @@ module UseCases
             @password = password
           end
 
-          def dispatch(&response) # rubocop:disable Metrics/MethodLength
+          def dispatch(&response)
             ensure_email_is_provided?
             ensure_password_is_provided?
 
@@ -36,7 +36,7 @@ module UseCases
 
           private
 
-          def create_user? # rubocop:disable Metrics/MethodLength
+          def create_user?
             user = ::User.new
             user.email = @email
             user.password = @password
