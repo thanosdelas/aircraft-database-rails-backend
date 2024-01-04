@@ -1,6 +1,8 @@
 namespace :aircraft do
   desc "Import data from opensky network aircraft database"
   task opensky_network: :environment do
+    abort "\n\n[*]Deprecated\n\n"
+
     require 'csv'
 
     csv_file = "#{Rails.root}/tmp/data/aircraftDatabase.csv"
@@ -26,10 +28,62 @@ namespace :aircraft do
   end
 
   desc "Import data from opensky network aircraft database"
+  task import_test_data: :environment do
+    require 'csv'
+
+    aircraft_models = [
+      "Lockheed C-69/Lockheed C-121 Constellation, military transport versions of the Constellation",
+      "YC-121F Constellation, experimental turboprop version",
+      "Lockheed R6V Constitution, large transport aircraft",
+      "Lockheed C-130 Hercules, medium combat transport (AC-130 gunship) (other variants)",
+      "Lockheed C-141 Starlifter, long-range jet transport",
+      "Lockheed C-5 Galaxy, heavy transport",
+      "Flatbed, military transport project, canceled",
+      "Lockheed P-38 Lightning, twin-engine propeller fighter",
+      "Lockheed P-80 Shooting Star, the United States Air Force's first operational jet fighter",
+      "Lockheed T-33 Shooting Star, trainer jet",
+      "Lockheed F-94 Starfire, all-weather fighter",
+      "Lockheed F-104 Starfighter, interceptor and later a multi-mission fighter, the 'missile with a man in it'",
+      "Lockheed F-117 Nighthawk, stealth fighter attack aircraft",
+      "General Dynamics F-16 Fighting Falcon, multirole fighter (Originally General Dynamics)",
+      "PV-1 Ventura and PV-2 Harpoon, Maritime patrol/bomber",
+      "PO-1W/WV-1 Constellation, AWACS version of the Constellation",
+      "EC-121/WV-2 Warning Star, AWACS version of the Super Constellation",
+      "Lockheed SR-71 Blackbird, reconnaissance (A-12) (M-21) (YF-12)",
+      "Northrop Grumman B-2 Spirit",
+      "Northrop Grumman E-2 Hawkeye",
+      "Northrop Grumman RQ-4 Global Hawk",
+      "Northrop Grumman X-47B",
+      "Northrop Grumman MQ-8 Fire Scout",
+      "Boeing AH-64 Apache",
+      "Boeing E-3 Sentry (AWACS)",
+      "Boeing E-767",
+      "Boeing EA-18G Growler",
+      "Boeing F/A-18E/F Super Hornet",
+      "Boeing P-8 Poseidon",
+      "Boeing E-767 Airborne Warning and Control System (AWACS)",
+      "Boeing T-7 Red Hawk (Advanced Pilot Training System)",
+      "Rockwell OV-10 Bronco",
+      "Rockwell B-1 Lancer",
+      "BAE Hawk",
+      "BAE Harrier II"
+    ]
+
+    ::AircraftImage.delete_all
+    ::Aircraft.delete_all
+    aircraft_models.each do |entry|
+      row = Aircraft.new(model: entry)
+      row.save
+    end
+
+    puts "\nDone"
+  end
+
+  desc "Import data from opensky network aircraft database"
   task list: :environment do
     require 'csv'
 
-    lockheed_martin = [
+    aircraft_models = [
       "Lockheed Vega",
       "Lockheed Model 10 Electra",
       "Lockheed Model 12 Electra Junior",
@@ -311,12 +365,11 @@ namespace :aircraft do
 
     ::AircraftImage.delete_all
     ::Aircraft.delete_all
-    lockheed_martin.each do |entry|
+    aircraft_models.each do |entry|
       row = Aircraft.new(model: entry)
       row.save
     end
 
     puts "\nDone"
   end
-
 end
