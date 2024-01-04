@@ -26,7 +26,7 @@ module UseCases
             if update_aircraft_details?
               @http_code = 200
               @message = 'Sucessfully updated aircraft'
-              @response_data = ::Aircraft.where(id: @aircraft.id)
+              @response_data = ::Aircraft.find(@aircraft.id)
 
               return success(&response)
             end
