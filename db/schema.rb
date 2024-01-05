@@ -10,19 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_04_202914) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_05_135712) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "aircraft", force: :cascade do |t|
     t.string "model", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.boolean "wikipedia_info_collected", default: false
+    t.string "wikipedia_title"
     t.string "featured_image"
+    t.string "infobox_hash"
+    t.string "infobox_raw"
     t.string "description"
     t.string "snippet"
-    t.string "wikipedia_title"
-    t.boolean "wikipedia_info_collected", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "aircraft_images", force: :cascade do |t|
