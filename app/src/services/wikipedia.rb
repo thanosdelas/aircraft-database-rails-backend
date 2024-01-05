@@ -5,7 +5,7 @@ require 'net/http'
 
 module Services
   class Wikipedia
-    attr_reader :search_result, :summary, :images
+    attr_reader :search_result, :summary, :infobox_raw, :infobox_hash, :featured_image, :images
 
     BASE_API_URL = 'https://en.wikipedia.org/w/api.php'
 
@@ -28,16 +28,20 @@ module Services
       @search_result
     end
 
-    def find_summary # rubocop:disable Metrics/MethodLength
+    # Find summary and infobox for Wikipedia page
+    def fetch_page_details # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       params = {
         format: 'json',
         action: 'query',
         origin: '*',
-        prop: 'extracts',
+        prop: 'extracts|revisions',
         exintro: 'true',
         explaintext: true,
         redirects: 1,
-        pageids: @search_result['pageid']
+        pageids: @search_result['pageid'],
+        rvprop: 'content',
+        rvsection: 0,
+        rvslots: '*'
       }
 
       uri = URI("#{BASE_API_URL}?#{URI.encode_www_form(params)}")
@@ -48,7 +52,49 @@ module Services
         @summary = data['query']['pages'][@search_result['pageid'].to_s]['extract']
       end
 
-      @summary
+      @infobox_raw = data['query']['pages'][@search_result['pageid'].to_s]['revisions'].first['slots']['main']['*']
+      @infobox_hash = extract_infobox_raw(@infobox_raw)
+      @featured_image = extract_featured_image_from_infobox(@infobox_raw)
+
+      true
+    end
+
+    def extract_featured_image_from_infobox(data)
+      image = ''
+
+      aircraft_info_raw = data[/{{Infobox(.*?)}}/m, 1].split("\n|")
+
+      aircraft_info_raw.each do |entry|
+        current_split = entry.split('=', 2)
+
+        if current_split.length == 2 # rubocop:disable Style/Next
+          key = current_split[0].strip.squeeze(' ').gsub(/\s+/, '_')
+
+          if key == 'image'
+            image = current_split[1].gsub('File:', '').gsub("\n", '').gsub(/<[^>]*>/, '').strip.squeeze(' ')
+            break
+          end
+        end
+      end
+
+      image
+    end
+
+    def extract_infobox_raw(data)
+      collect_entries = {}
+
+      aircraft_info_raw = data[/{{Infobox aircraft type(.*?)}}/m, 1].split("\n|")
+
+      aircraft_info_raw.each do |entry|
+        current_split = entry.split('=', 2)
+
+        next unless current_split.length == 2
+
+        key = current_split[0].strip.squeeze(' ').gsub(/\s+/, '_')
+        collect_entries[key] = current_split[1].gsub("\n", '').strip.squeeze(' ')
+      end
+
+      collect_entries
     end
 
     def find_images
@@ -101,7 +147,7 @@ module Services
       response = Net::HTTP.get(uri)
       data = JSON.parse(response)
 
-      data['query']['pages'].each do |_key, image|
+      data['query']['pages'].each_value do |image|
         next if urls_only.include?(image['imageinfo'][0]['url']) # Skip duplicate URLs
 
         next if image['imageinfo'].length != 1 ||

@@ -12,8 +12,8 @@ namespace :aircraft do
     # aircraft_list = ::Aircraft.where(id: 902)
     # aircraft_list = ::Aircraft.where(model: 'Lockheed C-5 Galaxy, heavy transport')
     # aircraft_list = ::Aircraft.where(model: 'Lockheed P-38 Lightning, twin-engine propeller fighter')
-    # aircraft_list = ::Aircraft.where(model: 'Boeing E-3 Sentry (AWACS)')
-    aircraft_list = ::Aircraft.where(wikipedia_info_collected: false)
+    aircraft_list = ::Aircraft.where(model: 'Boeing E-3 Sentry (AWACS)')
+    # aircraft_list = ::Aircraft.where(wikipedia_info_collected: false)
 
     #
     # Fetch and import
@@ -22,12 +22,28 @@ namespace :aircraft do
       puts "\n\n[*] Collecting information from Wikipedia for: #{aircraft.id}, #{aircraft.model}\n"
       result = wikipedia.search(aircraft.model)
       snippet = result['snippet']
-      summary = wikipedia.find_summary
+
+      # Fetch and parse infobox and summary
+      unless wikipedia.fetch_page_details
+        puts "[!] Could not find wikipedia page details; aborting."
+        abort
+      end
+
+      summary = wikipedia.summary
+      infobox_raw = wikipedia.infobox_raw
+      infobox_hash = wikipedia.infobox_hash
+      featured_image = wikipedia.featured_image
+
       images = wikipedia.find_images
 
       # Assign details to model
       aircraft.wikipedia_title = result['title']
       aircraft.snippet = result['snippet']
+
+      # aircraft.infobox_raw = infobox_raw
+      # aircraft.infobox_hash = infobox_hash
+      # aircraft.featured_image = featured_image
+
       aircraft.description = summary
 
       puts "[*] Wikipedia details fetched; importing ..."
