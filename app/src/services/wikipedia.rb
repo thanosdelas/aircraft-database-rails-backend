@@ -83,7 +83,11 @@ module Services
     def extract_infobox_raw(data)
       collect_entries = {}
 
-      aircraft_info_raw = data[/{{Infobox aircraft type(.*?)}}/m, 1].split("\n|")
+      aircraft_infobox = data[/{{Infobox aircraft type(.*?)}}/m, 1]
+
+      return collect_entries if aircraft_infobox.nil?
+
+      aircraft_info_raw = aircraft_infobox.split("\n|")
 
       aircraft_info_raw.each do |entry|
         current_split = entry.split('=', 2)
