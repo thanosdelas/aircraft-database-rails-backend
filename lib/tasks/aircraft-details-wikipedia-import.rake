@@ -13,6 +13,7 @@ namespace :aircraft do
     # aircraft_list = ::Aircraft.where(model: 'Lockheed C-5 Galaxy, heavy transport')
     # aircraft_list = ::Aircraft.where(model: 'Lockheed P-38 Lightning, twin-engine propeller fighter')
     # aircraft_list = ::Aircraft.where(model: 'Boeing E-3 Sentry (AWACS)')
+    # aircraft_list = ::Aircraft.where(model: 'Flatbed, military transport project, canceled')
     aircraft_list = ::Aircraft.where(wikipedia_info_collected: false)
 
     #
@@ -39,10 +40,10 @@ namespace :aircraft do
       # Assign details to model
       aircraft.wikipedia_title = result['title']
       aircraft.snippet = result['snippet']
-      aircraft.infobox_raw = infobox_raw
-      aircraft.infobox_hash = infobox_hash
-      aircraft.featured_image = featured_image
-      aircraft.description = summary
+      aircraft.infobox_raw = infobox_raw if infobox_raw.present?
+      aircraft.infobox_hash = infobox_hash if infobox_hash.present?
+      aircraft.featured_image = featured_image if featured_image.present?
+      aircraft.description = summary if summary.present?
 
       puts "[*] Wikipedia details fetched; importing ..."
 
