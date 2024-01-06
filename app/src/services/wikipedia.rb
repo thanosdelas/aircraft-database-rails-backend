@@ -66,10 +66,13 @@ module Services
       # subtrings that start and end with the same characters {{ }}.
       # \{\{([^{}]*|(?R))*\}\}
       regex = /\{\{Infobox([^{}]*|#{Regexp.union(/\{\{[^{}]*\}\}/).source})*\}\}/
+      find_infobox = data[regex, 0]
+
+      return image if find_infobox.nil?
 
       # Regular expression in gsub, fixes the delimiter "\n|",
       # which may contain one or more spaces between \n and |.
-      aircraft_info_raw = data[regex, 0].gsub(/\n(.*?)\|/, "\n|").split("\n|")
+      aircraft_info_raw = find_infobox.gsub(/\n(.*?)\|/, "\n|").split("\n|")
 
       aircraft_info_raw.each do |entry|
         current_split = entry.split('=', 2)
