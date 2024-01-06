@@ -158,6 +158,9 @@ module Services
       response = Net::HTTP.get(uri)
       data = JSON.parse(response)
 
+      return urls if !data.key?('query') ||
+                     !data['query'].key?('pages')
+
       data['query']['pages'].each_value do |image|
         next if urls_only.include?(image['imageinfo'][0]['url']) # Skip duplicate URLs
 
