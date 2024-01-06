@@ -8,12 +8,6 @@ namespace :aircraft do
 
     wikipedia = ::Services::Wikipedia.new
 
-    # aircraft_list = ::Aircraft.limit(10)
-    # aircraft_list = ::Aircraft.where(id: 902)
-    # aircraft_list = ::Aircraft.where(model: 'Lockheed C-5 Galaxy, heavy transport')
-    # aircraft_list = ::Aircraft.where(model: 'Lockheed P-38 Lightning, twin-engine propeller fighter')
-    # aircraft_list = ::Aircraft.where(model: 'Boeing E-3 Sentry (AWACS)')
-    # aircraft_list = ::Aircraft.where(model: 'Flatbed, military transport project, canceled')
     aircraft_list = ::Aircraft.where(wikipedia_info_collected: false)
 
     #
