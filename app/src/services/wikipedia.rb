@@ -62,7 +62,14 @@ module Services
     def extract_featured_image_from_infobox(data)
       image = ''
 
-      aircraft_info_raw = data[/{{Infobox(.*?)}}/m, 1].split("\n|")
+      # The following regular expression matches anything between {{ }}, but ignores
+      # subtrings that start and end with the same characters {{ }}.
+      # \{\{([^{}]*|(?R))*\}\}
+      regex = /\{\{Infobox([^{}]*|#{Regexp.union(/\{\{[^{}]*\}\}/).source})*\}\}/
+
+      # Regular expression in gsub, fixes the delimiter "\n|",
+      # which may contain one or more spaces between \n and |.
+      aircraft_info_raw = data[regex, 0].gsub(/\n(.*?)\|/, "\n|").split("\n|")
 
       aircraft_info_raw.each do |entry|
         current_split = entry.split('=', 2)
