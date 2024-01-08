@@ -1,3 +1,18 @@
+# Aircraft List Resources
+# https://en.wikipedia.org/wiki/Category:Grumman_aircraft
+# https://en.wikipedia.org/wiki/Grumman
+# https://en.wikipedia.org/wiki/Category:Bell_aircraft
+# https://en.wikipedia.org/wiki/Bell_Aircraft
+# https://en.wikipedia.org/wiki/Convair
+# https://en.wikipedia.org/wiki/List_of_United_States_bomber_aircraft
+# https://en.wikipedia.org/wiki/Lists_of_military_aircraft_of_the_United_States
+# https://en.wikipedia.org/wiki/List_of_active_United_States_military_aircraft
+# https://en.wikipedia.org/wiki/List_of_Lockheed_aircraft
+# https://en.wikipedia.org/wiki/List_of_fighter_aircraft
+# https://en.wikipedia.org/wiki/List_of_bomber_aircraft
+# https://en.wikipedia.org/wiki/List_of_aircraft_of_the_Royal_Air_Force
+# https://en.wikipedia.org/wiki/Category:Lists_of_military_aircraft
+
 namespace :aircraft do
   desc "Import data from opensky network aircraft database"
   task opensky_network: :environment do
@@ -38,7 +53,6 @@ namespace :aircraft do
       "Lockheed C-130 Hercules, medium combat transport (AC-130 gunship) (other variants)",
       "Lockheed C-141 Starlifter, long-range jet transport",
       "Lockheed C-5 Galaxy, heavy transport",
-      "Flatbed, military transport project, canceled",
       "Lockheed P-38 Lightning, twin-engine propeller fighter",
       "Lockheed P-80 Shooting Star, the United States Air Force's first operational jet fighter",
       "Lockheed T-33 Shooting Star, trainer jet",
@@ -105,7 +119,6 @@ namespace :aircraft do
       "Lockheed C-130 Hercules, medium combat transport (AC-130 gunship) (other variants)",
       "Lockheed C-141 Starlifter, long-range jet transport",
       "Lockheed C-5 Galaxy, heavy transport",
-      "Flatbed, military transport project, canceled",
       "Lockheed P-38 Lightning, twin-engine propeller fighter",
       "Lockheed P-80 Shooting Star, the United States Air Force's first operational jet fighter",
       "Lockheed T-33 Shooting Star, trainer jet",
@@ -132,7 +145,6 @@ namespace :aircraft do
       "UGM-27 Polaris",
       "UGM-73 Poseidon",
       "UGM-89 Perseus",
-      "Trident",
       "UGM-96 Trident I",
       "UGM-133 Trident II",
       "High Virgo",
@@ -322,7 +334,6 @@ namespace :aircraft do
       "BAE Systems Mantis",
       "BAE Systems Corax",
       "BAE Systems Raven",
-      "BAE Systems Taranis",
       "BAE Systems Tempest",
       "Raytheon Beechcraft King Air",
       "Raytheon Hawker",
