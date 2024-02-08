@@ -42,7 +42,7 @@ namespace :aircraft do
     puts "\nDone"
   end
 
-  desc "Import data from opensky network aircraft database"
+  desc "Import a small sample of aircraft models for testing"
   task import_test_data: :environment do
     require 'csv'
 
@@ -93,8 +93,8 @@ namespace :aircraft do
     puts "\nDone"
   end
 
-  desc "Import data from opensky network aircraft database"
-  task list: :environment do
+  desc "Import aircraft models"
+  task import: :environment do
     require 'csv'
 
     aircraft_models = [
