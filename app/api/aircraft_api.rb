@@ -23,11 +23,7 @@ class AircraftAPI < Grape::API
         .to_json(include: :images))
 
         http_code = 200
-        data = {
-          status: 'ok',
-          message: 'Sucessfully fetched data',
-          data: aircraft
-        }
+        data = aircraft
 
         render_response(http_code: http_code, data: data)
       end
