@@ -39,6 +39,12 @@ RSpec.describe ::Aircraft, type: :model do
         ]
       end
 
+      before(:each) do
+        images.each do |image|
+          subject.images.new(images)
+        end
+      end
+
       it 'successfuly creates an aircraft with images' do
         expect(subject).to be_valid
         expect(subject.save).to eq(true)
