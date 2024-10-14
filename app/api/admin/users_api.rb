@@ -4,7 +4,7 @@ module Admin
   class UsersAPI < Grape::API
     resource :users do
       get do
-        response = ::UseCases::API::Admin::User::Users.new
+        response = ::UseCases::Admin::User::Users.new
         response.dispatch do |http_code, data|
           render_response(http_code: http_code, data: data)
         end
@@ -15,7 +15,7 @@ module Admin
         requires :password, type: String
       end
       post do
-        response = ::UseCases::API::Admin::User::Create.new(email: params[:email], password: params[:password])
+        response = ::UseCases::Admin::User::Create.new(email: params[:email], password: params[:password])
         response.dispatch do |http_code, data|
           render_response(http_code: http_code, data: data)
         end

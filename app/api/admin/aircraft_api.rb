@@ -37,7 +37,7 @@ module Admin
           optional :description, type: String
         end
         put do
-          response = ::UseCases::API::Admin::Aircraft::Update.new(params: params.symbolize_keys)
+          response = ::UseCases::Admin::Aircraft::Update.new(params: params.symbolize_keys)
           response.dispatch do |http_code, data|
             render_response(http_code: http_code, data: data)
           end
@@ -45,7 +45,7 @@ module Admin
 
         resource :images do
           get do
-            response = ::UseCases::API::Admin::Aircraft::Images::Fetch.new(aircraft_id: params[:id])
+            response = ::UseCases::Admin::Aircraft::Images::Fetch.new(aircraft_id: params[:id])
             response.dispatch do |http_code, data|
               render_response(http_code: http_code, data: data)
             end
@@ -55,7 +55,7 @@ module Admin
             requires :images, type: Array
           end
           put do
-            response = ::UseCases::API::Admin::Aircraft::Images::Update.new(aircraft_id: params['id'], images: params['images'])
+            response = ::UseCases::Admin::Aircraft::Images::Update.new(aircraft_id: params['id'], images: params['images'])
             response.dispatch do |http_code, data|
               render_response(http_code: http_code, data: data)
             end

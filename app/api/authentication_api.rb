@@ -7,7 +7,7 @@ class AuthenticationAPI < BaseAPI
       requires :password, type: String
     end
     post 'login' do
-      response = ::UseCases::API::Authentication::Login.new(email: params[:email], password: params[:password])
+      response = ::UseCases::Authentication::Login.new(email: params[:email], password: params[:password])
       response.dispatch do |http_code, data|
         render_response(http_code: http_code, data: data)
       end
@@ -17,7 +17,7 @@ class AuthenticationAPI < BaseAPI
       requires :access_token, type: String
     end
     post 'verify_token' do
-      response = ::UseCases::API::Authentication::VerifyAccessToken.new(access_token: params[:access_token])
+      response = ::UseCases::Authentication::VerifyAccessToken.new(access_token: params[:access_token])
       response.dispatch do |http_code, data|
         render_response(http_code: http_code, data: data)
       end

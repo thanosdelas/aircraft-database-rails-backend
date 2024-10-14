@@ -23,7 +23,7 @@ module Middleware
 
       return false if access_token.blank?
 
-      verify_token = ::UseCases::API::Authentication::VerifyAccessToken.new(access_token: access_token)
+      verify_token = ::UseCases::Authentication::VerifyAccessToken.new(access_token: access_token)
 
       verify_token.dispatch do |_http_status, data|
         return true if data[:status] == 'success'

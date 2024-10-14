@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ::UseCases::API::Admin::User::Create do
+RSpec.describe ::UseCases::Admin::User::Create do
   let(:email) { '' }
   let(:password) { '' }
   let(:render_response) do
