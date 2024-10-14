@@ -59,7 +59,7 @@ module Services
       true
     end
 
-    def extract_featured_image_from_infobox(data)
+    def extract_featured_image_from_infobox(data) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       image = ''
 
       # The following regular expression matches anything between {{ }}, but ignores
@@ -90,7 +90,7 @@ module Services
       image
     end
 
-    def extract_infobox_raw(data)
+    def extract_infobox_raw(data) # rubocop:disable Metrics/AbcSize
       collect_entries = {}
 
       aircraft_infobox = data[/{{Infobox aircraft type(.*?)}}/m, 1]

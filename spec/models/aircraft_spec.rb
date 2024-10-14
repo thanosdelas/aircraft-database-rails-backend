@@ -40,9 +40,7 @@ RSpec.describe ::Aircraft, type: :model do
       end
 
       before(:each) do
-        images.each do |image|
-          subject.images.new(images)
-        end
+        subject.images.new(images)
       end
 
       it 'successfuly creates an aircraft with images' do
