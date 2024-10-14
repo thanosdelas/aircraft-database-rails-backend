@@ -23,8 +23,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_06_135501) do
     t.string "infobox_raw"
     t.string "description"
     t.string "snippet"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["model"], name: "index_aircraft_on_model", unique: true
   end
 
@@ -33,8 +33,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_06_135501) do
     t.string "filename", null: false
     t.string "description"
     t.bigint "aircraft_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["aircraft_id", "url"], name: "index_aircraft_images_on_url_and_aircraft_id", unique: true
     t.index ["aircraft_id"], name: "index_aircraft_images_on_aircraft_id"
     t.index ["filename"], name: "index_aircraft_images_on_filename"
@@ -43,8 +43,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_06_135501) do
   create_table "user_groups", force: :cascade do |t|
     t.string "group"
     t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["group"], name: "index_user_groups_on_group", unique: true
   end
 
@@ -55,8 +55,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_06_135501) do
     t.string "password_digest"
     t.string "first_name"
     t.string "last_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["email"], name: "index_email_on_users", unique: true
     t.index ["user_group_id"], name: "index_users_on_user_group_id"
     t.index ["username"], name: "index_username_on_users", unique: true
