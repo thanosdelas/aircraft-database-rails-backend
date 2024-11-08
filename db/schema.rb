@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_06_135501) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_08_185633) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,7 +19,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_06_135501) do
     t.boolean "wikipedia_info_collected", default: false
     t.string "wikipedia_title"
     t.string "featured_image"
-    t.string "infobox_hash"
+    t.string "infobox_json"
     t.string "infobox_raw"
     t.string "description"
     t.string "snippet"

@@ -26,7 +26,7 @@ namespace :aircraft do
 
       summary = wikipedia.summary
       infobox_raw = wikipedia.infobox_raw
-      infobox_hash = wikipedia.infobox_hash
+      infobox_json = wikipedia.infobox_hash.to_json
       featured_image = wikipedia.featured_image
 
       images = wikipedia.find_images
@@ -35,7 +35,7 @@ namespace :aircraft do
       aircraft.wikipedia_title = result['title']
       aircraft.snippet = result['snippet']
       aircraft.infobox_raw = infobox_raw if infobox_raw.present?
-      aircraft.infobox_hash = infobox_hash if infobox_hash.present?
+      aircraft.infobox_json = infobox_json if infobox_json.present?
       aircraft.featured_image = featured_image if featured_image.present?
       aircraft.description = summary if summary.present?
 
