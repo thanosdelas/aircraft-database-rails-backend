@@ -53,13 +53,13 @@ module Services
       end
 
       @infobox_raw = data['query']['pages'][@search_result['pageid'].to_s]['revisions'].first['slots']['main']['*']
-      @infobox_hash = extract_infobox_raw(@infobox_raw)
-      @featured_image = extract_featured_image_from_infobox(@infobox_raw)
+      @infobox_hash = infobox_raw_to_hash(@infobox_raw)
+      @featured_image = @infobox_hash['image']
 
       true
     end
 
-    def extract_featured_image_from_infobox(data) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def extract_featured_image_from_infobox(infobox_raw) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       image = ''
 
       # The following regular expression matches anything between {{ }}, but ignores
@@ -90,25 +90,28 @@ module Services
       image
     end
 
-    def extract_infobox_raw(data) # rubocop:disable Metrics/AbcSize
-      collect_entries = {}
+    def infobox_raw_to_hash(data) # rubocop:disable Metrics/AbcSize
+      infobox_hash = {}
 
-      aircraft_infobox = data[/{{Infobox aircraft type(.*?)}}/m, 1]
+      aircraft_infobox = data[/{{Infobox(.*?)}}/m, 1]
 
-      return collect_entries if aircraft_infobox.nil?
+      return infobox_hash if aircraft_infobox.nil?
 
-      aircraft_info_raw = aircraft_infobox.split("\n|")
+      infobox_entries = aircraft_infobox.split(/\n\s*\|/)
+      infobox_entries.shift
+      infobox_entries[infobox_entries.length - 1].gsub!("\n}}", '')
 
-      aircraft_info_raw.each do |entry|
-        current_split = entry.split('=', 2)
+      infobox_entries.each do |infobox_entry|
+        key, value = infobox_entry.split('=')
 
-        next unless current_split.length == 2
+        value = '' if value.nil?
 
-        key = current_split[0].strip.squeeze(' ').gsub(/\s+/, '_')
-        collect_entries[key] = current_split[1].gsub("\n", '').strip.squeeze(' ')
+        key = key.strip.squeeze(' ').gsub(/\s+/, '_').downcase
+
+        infobox_hash[key] = value.gsub("\n", '').strip.squeeze(' ')
       end
 
-      collect_entries
+      infobox_hash
     end
 
     def find_images
@@ -177,7 +180,8 @@ module Services
                 /apps_kaboodle/i.match(image['imageinfo'][0]['url']) ||
                 /support_vote/i.match(image['imageinfo'][0]['url']) ||
                 /Wiki_letter/i.match(image['imageinfo'][0]['url']) ||
-                /Aviacionavion/i.match(image['imageinfo'][0]['url'])
+                /Aviacionavion/i.match(image['imageinfo'][0]['url']) ||
+                /video_camera/i.match(image['imageinfo'][0]['url'])
 
         urls_only.push(image['imageinfo'][0]['url'])
 
