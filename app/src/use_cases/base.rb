@@ -2,31 +2,33 @@
 
 module UseCases
   class Base
-    attr_reader :http_code, :response_data, :message, :errors
+    attr_reader :data, :errors
 
     def initialize
-      @http_code = nil
-      @response_data = nil
+      @data = nil
       @errors = []
-      @message = nil
     end
 
     private
 
-    def success
-      response = { status: 'success', message: @message, data: @response_data }
-
-      yield @http_code, response
+    def success(status: :success)
+      yield status, @data
     end
 
     def error
-      response = { status: 'error', errors: @errors }
+      raise 'Cannot fail without errors' if @errors.length == 0
 
-      yield @http_code, response
+      status = @errors.map { |error| error[:code] }.pop
+
+      yield status, @errors
     end
 
     def add_error(code:, message:, field: nil)
-      error = { code: code, message: message }
+      error = {
+        code: code,
+        message: message
+      }
+
       error[:field] = field unless field.nil?
 
       @errors.push(error)

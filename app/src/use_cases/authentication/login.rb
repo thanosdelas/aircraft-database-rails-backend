@@ -17,16 +17,14 @@ module UseCases
 
       def dispatch(&response)
         if valid_user? && generate_access_token?
-          @http_code = 201
-          @message = 'Authentication was successfull'
-          @response_data = {
+          @data = {
             access_token: @access_token
           }
-          return success(&response)
+
+          return success(status: :created, &response)
         end
 
-        @http_code = 401
-        add_error(code: :failed, message: 'Authentication failed')
+        add_error(code: :unauthorized, message: 'Authentication failed')
         error(&response)
       end
 
@@ -35,9 +33,9 @@ module UseCases
       def valid_user?
         @user = User.find_by(email: @email)
 
-        return true if !@user.nil? && valid_password?
+        return false if @user.nil? || !valid_password?
 
-        false
+        true
       end
 
       def valid_password?

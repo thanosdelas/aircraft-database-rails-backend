@@ -8,9 +8,6 @@ module Admin
       end
       get do
         if params[:search_term].present?
-          #
-          # TODO: Ensure the following is safe for SQL injection.
-          #
           fetch_data = ::Aircraft.where(
             'LOWER(model) LIKE :search_term',
             {
@@ -21,14 +18,12 @@ module Admin
           fetch_data = ::Aircraft.all
         end
 
-        http_code = 200
+        status_code = :success
         data = {
-          status: 'ok',
-          message: 'Sucessfully fetched images',
           data: fetch_data
         }
 
-        render_response(http_code: http_code, data: data)
+        render_response(status_code: status_code, data: data)
       end
 
       route_param :id do
@@ -38,16 +33,16 @@ module Admin
         end
         put do
           response = ::UseCases::Admin::Aircraft::Update.new(params: params.symbolize_keys)
-          response.dispatch do |http_code, data|
-            render_response(http_code: http_code, data: data)
+          response.dispatch do |status_code, data|
+            render_response(status_code: status_code, data: data)
           end
         end
 
         resource :images do
           get do
             response = ::UseCases::Admin::Aircraft::Images::Fetch.new(aircraft_id: params[:id])
-            response.dispatch do |http_code, data|
-              render_response(http_code: http_code, data: data)
+            response.dispatch do |status_code, data|
+              render_response(status_code: status_code, data: data)
             end
           end
 
@@ -56,8 +51,8 @@ module Admin
           end
           put do
             response = ::UseCases::Admin::Aircraft::Images::Update.new(aircraft_id: params['id'], images: params['images'])
-            response.dispatch do |http_code, data|
-              render_response(http_code: http_code, data: data)
+            response.dispatch do |status_code, data|
+              render_response(status_code: status_code, data: data)
             end
           end
         end

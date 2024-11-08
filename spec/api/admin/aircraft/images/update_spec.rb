@@ -46,11 +46,11 @@ RSpec.describe Admin::AircraftAPI do
 
           expect(last_response.status).to eq(200)
 
-          json = JSON.parse(last_response.body)
+          data = JSON.parse(last_response.body)
 
           updated_images = ::AircraftImage.where(aircraft_id: aircraft_id)
 
-          ids = json['data'].map { |entry| entry['id'] }
+          ids = data.map { |entry| entry['id'] }
           expect(ids).to eq([updated_images[0].id, updated_images[1].id])
 
           expect(updated_images.count).to eq(2)
@@ -83,11 +83,11 @@ RSpec.describe Admin::AircraftAPI do
 
           expect(last_response.status).to eq(200)
 
-          json = JSON.parse(last_response.body)
+          data = JSON.parse(last_response.body)
 
           updated_images = ::AircraftImage.all
 
-          ids = json['data'].map { |entry| entry['id'] }
+          ids = data.map { |entry| entry['id'] }
           expect(ids).to eq([updated_images[0].id, updated_images[1].id])
 
           expect(updated_images.count).to eq(2)
@@ -129,19 +129,14 @@ RSpec.describe Admin::AircraftAPI do
           put endpoint, params
 
           expect(last_response.status).to eq(422)
-          expect(last_response.body).to eq({
-            status: 'error',
-            errors: [
-              {
-                code: :error,
-                message: "Validation failed: Filename can't be blank"
-              },
+          expect(last_response.body).to eq(
+            [
               {
                 code: :failed,
-                message: 'Could not update images'
+                message: "Validation failed: Filename can't be blank"
               }
-            ]
-          }.to_json)
+            ].to_json
+          )
 
           updated_images = ::AircraftImage.all
           expect(updated_images).to eq([])

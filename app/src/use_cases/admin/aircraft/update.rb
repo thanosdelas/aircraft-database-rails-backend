@@ -4,36 +4,21 @@ module UseCases
   module Admin
     module Aircraft
       class Update < ::UseCases::Base
-        attr_reader :errors, :params
+        attr_reader :params
 
         def initialize(params:)
           super()
 
           @params = params
-
-          @errors = []
         end
 
         def dispatch(&response)
-          if !verify_aircraft_exists?
-            @http_code = 422
-            add_error(code: :not_found, message: 'Could not find aircraft')
+          return error(&response) if !verify_aircraft_exists?
 
-            return error(&response)
-          end
+          return error(&response) if !update_aircraft_details?
 
-          if update_aircraft_details?
-            @http_code = 200
-            @message = 'Sucessfully updated aircraft'
-            @response_data = ::Aircraft.find(@aircraft.id)
-
-            return success(&response)
-          end
-
-          @http_code = 422
-          add_error(code: :failed, message: 'Could not update aircraft')
-
-          error(&response)
+          @data = ::Aircraft.find(@aircraft.id)
+          success(&response)
         end
 
         private
@@ -64,13 +49,23 @@ module UseCases
           @aircraft.model = params[:model] if params[:model]
           @aircraft.description = params[:description] if params[:description]
 
-          @aircraft.save!
+          if !@aircraft.save!
+            add_error(code: :failed, message: 'Could not update aircraft')
+
+            return false
+          end
+
+          true
         end
 
         def verify_aircraft_exists?
           @aircraft = ::Aircraft.find_by(id: params[:id])
 
-          return false if @aircraft.nil?
+          if @aircraft.nil?
+            add_error(code: :not_found, message: 'Could not find aircraft')
+
+            return false
+          end
 
           true
         end

@@ -33,7 +33,7 @@ RSpec.describe Admin::AircraftAPI do
     )
   end
 
-  let(:path) { "/api/admin/aircraft" }
+  let(:path) { '/api/admin/aircraft' }
 
   before do
     aircraft_a.images.new(images)

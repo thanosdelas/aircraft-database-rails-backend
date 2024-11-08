@@ -18,9 +18,7 @@ RSpec.describe ::UseCases::Admin::User::Create do
       expect(subject).to have_attributes(
         email: email,
         password: password,
-        http_code: 422,
-        errors: [],
-        message: nil
+        errors: []
       )
     end
   end
@@ -33,7 +31,6 @@ RSpec.describe ::UseCases::Admin::User::Create do
       it 'collects errors and returns an error response' do
         subject.dispatch(&render_response)
 
-        expect(subject.http_code).to eq(422)
         expect(subject.errors).to eq(
           [
             { code: :missing, message: 'Email must be provided', field: :email },
@@ -48,8 +45,6 @@ RSpec.describe ::UseCases::Admin::User::Create do
 
         it 'returns a successful response with no errors' do
           subject.dispatch(&render_response)
-
-          expect(subject.http_code).to eq(422)
 
           expect(subject.errors).to eq([
             { code: :blank, message: 'must exist', field: :group }

@@ -5,37 +5,21 @@ module UseCases
     module Aircraft
       module Images
         class Update < ::UseCases::Base
-          attr_reader :errors
-
           def initialize(aircraft_id:, images:)
             super()
 
             @aircraft_id = aircraft_id
             @images = images
-
-            @errors = []
           end
 
           def dispatch(&response)
-            if !verify_aircraft_id? || !verify_images? || !verify_aircraft_exists?
-              @http_code = 422
-              add_error(code: :failed, message: 'Could not update images')
+            return error(&response) if !verify_aircraft_id? ||
+                                       !verify_images? ||
+                                       !verify_aircraft_exists? ||
+                                       !save_images?
 
-              return error(&response)
-            end
-
-            if save_images?
-              @http_code = 200
-              @message = 'Sucessfully updated images'
-              @response_data = ::AircraftImage.where(aircraft_id: @aircraft_id)
-
-              return success(&response)
-            end
-
-            @http_code = 422
-            add_error(code: :failed, message: 'Could not update images')
-
-            error(&response)
+            @data = ::AircraftImage.where(aircraft_id: @aircraft_id)
+            success(&response)
           end
 
           private
@@ -86,33 +70,41 @@ module UseCases
 
             true
           rescue ActiveRecord::RecordInvalid => error
-            @errors.push({
-              code: 'error',
-              message: error.message
-            })
+            add_error(code: :failed, message: error.message)
 
             false
           end
 
           def verify_aircraft_id?
-            return true if @aircraft_id.present?
+            if @aircraft_id.blank?
+              add_error(code: :failed, message: 'Could not update images')
 
-            false
+              return false
+            end
+
+            true
           end
 
           def verify_aircraft_exists?
             @aircraft = ::Aircraft.find_by(id: @aircraft_id)
 
-            return false if @aircraft.nil?
+            if @aircraft.nil?
+              add_error(code: :failed, message: 'Could not update images')
+
+              return false
+            end
 
             true
           end
 
           def verify_images?
-            return true if @images.present?
-            return true if @images.is_a?(Array)
+            if @images.blank? || !@images.is_a?(Array)
+              add_error(code: :failed, message: 'Could not update images')
 
-            false
+              return false
+            end
+
+            true
           end
         end
       end

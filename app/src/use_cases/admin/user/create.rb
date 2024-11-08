@@ -9,8 +9,6 @@ module UseCases
         def initialize(email:, password:)
           super()
 
-          @http_code = 422
-
           @email = email
           @password = password
         end
@@ -19,18 +17,9 @@ module UseCases
           ensure_email_is_provided?
           ensure_password_is_provided?
 
-          if errors?
-            @http_code = 422
-            return error(&response)
-          end
+          return error(&response) if errors? || !create_user?
 
-          if create_user?
-            @http_code = 201
-            return success(&response)
-          end
-
-          @http_code = 422
-          error(&response)
+          success(status: :created, &response)
         end
 
         private
@@ -48,8 +37,7 @@ module UseCases
             return false
           end
 
-          @http_code = 201
-          @response_data = user
+          @data = user
           true
         end
 
