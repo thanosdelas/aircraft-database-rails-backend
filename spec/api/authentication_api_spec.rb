@@ -38,10 +38,8 @@ RSpec.describe AuthenticationAPI do
 
         expect(last_response.status).to eq(201)
 
-        json = JSON.parse(last_response.body)
-        expect(json['status']).to eq('success')
-        expect(json['message']).to eq('Authentication was successfull')
-        expect(json['data']['access_token']).to be_present
+        data = JSON.parse(last_response.body)
+        expect(data['access_token']).to be_present
       end
     end
 
@@ -58,12 +56,14 @@ RSpec.describe AuthenticationAPI do
           post endpoint, params
 
           expect(last_response.status).to eq(401)
-          expect(last_response.body).to eq({
-            status: 'error', errors: [{
-              code: 'failed',
-              message: 'Authentication failed'
-            }]
-          }.to_json)
+          expect(last_response.body).to eq(
+            [
+              {
+                code: 'unauthorized',
+                message: 'Authentication failed'
+              }
+            ].to_json
+          )
         end
       end
 
@@ -113,9 +113,7 @@ RSpec.describe AuthenticationAPI do
       it 'successfully verifies the access token responds with 201' do
         post endpoint, params
 
-        json = JSON.parse(last_response.body)
-        expect(json['status']).to eq('success')
-        expect(json['message']).to eq('Successfully verified token and user')
+        expect(last_response.status).to eq(201)
       end
     end
 
@@ -130,13 +128,13 @@ RSpec.describe AuthenticationAPI do
         it 'fails to verify the access token and responds with 422' do
           post endpoint, params
 
-          expect(last_response.status).to eq(422)
-          expect(last_response.body).to eq({
-            status: 'error', errors: [{
-              code: 'failed',
+          expect(last_response.status).to eq(401)
+          expect(last_response.body).to eq(
+            [{
+              code: 'unauthorized',
               message: 'Could not verify token'
-            }]
-          }.to_json)
+            }].to_json
+          )
         end
       end
 

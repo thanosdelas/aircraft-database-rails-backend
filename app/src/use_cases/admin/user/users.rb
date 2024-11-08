@@ -5,9 +5,7 @@ module UseCases
     module User
       class Users < ::UseCases::Base
         def dispatch(&response)
-          @http_code = 200
-          @response_data = users
-          @message = 'Sucessfully retrieved users'
+          @data = users
 
           success(&response)
         end

@@ -45,6 +45,12 @@ Style/Documentation:
 Style/FrozenStringLiteralComment:
   Enabled: true
 
+Style/NumericPredicate:
+  Enabled: false
+
+Style/ZeroLengthPredicate:
+  Enabled: false
+
 Naming/VariableNumber:
   Enabled: false
 

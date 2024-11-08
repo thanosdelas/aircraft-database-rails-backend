@@ -12,16 +12,9 @@ module UseCases
           end
 
           def dispatch(&response)
-            if !verify_aircraft_id? || !verify_aircraft_exists?
-              @http_code = 422 # Maybe 204 or 404?
-              add_error(code: :failed, message: 'Could not fetch images')
+            return error(&response) if !verify_aircraft_id? || !verify_aircraft_exists?
 
-              return error(&response)
-            end
-
-            @http_code = 200
-            @message = 'Sucessfully fetched images'
-            @response_data = ::AircraftImage.where(aircraft_id: @aircraft_id)
+            @data = ::AircraftImage.where(aircraft_id: @aircraft_id)
             success(&response)
           end
 
@@ -30,13 +23,17 @@ module UseCases
           def verify_aircraft_id?
             return true if @aircraft_id.present?
 
+            add_error(code: :failed, message: 'Could not fetch images. No id Provided.')
             false
           end
 
           def verify_aircraft_exists?
             @aircraft = ::Aircraft.find_by(id: @aircraft_id)
 
-            return false if @aircraft.nil?
+            if @aircraft.nil?
+              add_error(code: :failed, message: 'Could not fetch images. No id Provided.')
+              return false
+            end
 
             true
           end

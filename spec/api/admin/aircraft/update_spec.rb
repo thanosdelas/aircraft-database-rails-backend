@@ -41,8 +41,8 @@ RSpec.describe Admin::AircraftAPI do
              .and change { aircraft.description }.from(nil).to(params[:description])
 
           json = JSON.parse(last_response.body)
-          expect(json['data']['model']).to eq(params[:model])
-          expect(json['data']['description']).to eq(params[:description])
+          expect(json['model']).to eq(params[:model])
+          expect(json['description']).to eq(params[:description])
         end
       end
     end

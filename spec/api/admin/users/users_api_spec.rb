@@ -35,9 +35,9 @@ RSpec.describe Admin::UsersAPI do
 
         expect(last_response.status).to eq(200)
 
-        json = JSON.parse(last_response.body)
-        expect(json['data'].count).to eq(2)
-        expect(json['data'].pluck('id')).to eq([user_1.id, user_2.id])
+        data = JSON.parse(last_response.body)
+        expect(data.count).to eq(2)
+        expect(data.pluck('id')).to eq([user_1.id, user_2.id])
       end
     end
   end
@@ -61,8 +61,8 @@ RSpec.describe Admin::UsersAPI do
 
         expect(last_response.status).to eq(201)
 
-        json = JSON.parse(last_response.body)
-        created_user = ::User.find(json['data']['id'])
+        data = JSON.parse(last_response.body)
+        created_user = ::User.find(data['id'])
         expect(created_user).to have_attributes(
           email: email
         )
@@ -98,14 +98,15 @@ RSpec.describe Admin::UsersAPI do
           post endpoint, params
 
           expect(last_response.status).to eq(422)
-          expect(last_response.body).to eq({
-            status: 'error',
-            errors: [{
-              code: :taken,
-              message: 'has already been taken',
-              field: 'email'
-            }]
-          }.to_json)
+          expect(last_response.body).to eq(
+            [
+              {
+                code: :taken,
+                message: 'has already been taken',
+                field: 'email'
+              }
+            ].to_json
+          )
         end
       end
     end

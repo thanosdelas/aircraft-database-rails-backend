@@ -45,11 +45,9 @@ RSpec.describe Admin::AircraftAPI do
       get endpoint
 
       expect(last_response.status).to eq(200)
-      json = JSON.parse(last_response.body)
-
-      expect(json['data'].count).to eq(2)
-
-      urls = json['data'].map { |entry| entry[:url] }
+      data = JSON.parse(last_response.body)
+      expect(data.count).to eq(2)
+      urls = data.map { |entry| entry[:url] }
       expect(urls).to eq([images[0]['url'], images[1]['url']])
     end
   end

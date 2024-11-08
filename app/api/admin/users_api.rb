@@ -5,8 +5,8 @@ module Admin
     resource :users do
       get do
         response = ::UseCases::Admin::User::Users.new
-        response.dispatch do |http_code, data|
-          render_response(http_code: http_code, data: data)
+        response.dispatch do |status_code, data|
+          render_response(status_code: status_code, data: data)
         end
       end
 
@@ -16,8 +16,8 @@ module Admin
       end
       post do
         response = ::UseCases::Admin::User::Create.new(email: params[:email], password: params[:password])
-        response.dispatch do |http_code, data|
-          render_response(http_code: http_code, data: data)
+        response.dispatch do |status_code, data|
+          render_response(status_code: status_code, data: data)
         end
       end
     end

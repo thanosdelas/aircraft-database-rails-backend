@@ -8,8 +8,8 @@ class AuthenticationAPI < BaseAPI
     end
     post 'login' do
       response = ::UseCases::Authentication::Login.new(email: params[:email], password: params[:password])
-      response.dispatch do |http_code, data|
-        render_response(http_code: http_code, data: data)
+      response.dispatch do |status_code, data|
+        render_response(status_code: status_code, data: data)
       end
     end
 
@@ -18,8 +18,8 @@ class AuthenticationAPI < BaseAPI
     end
     post 'verify_token' do
       response = ::UseCases::Authentication::VerifyAccessToken.new(access_token: params[:access_token])
-      response.dispatch do |http_code, data|
-        render_response(http_code: http_code, data: data)
+      response.dispatch do |status_code, data|
+        render_response(status_code: status_code, data: data)
       end
     end
   end

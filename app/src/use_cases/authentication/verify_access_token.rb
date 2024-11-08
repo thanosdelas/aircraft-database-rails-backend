@@ -12,15 +12,9 @@ module UseCases
       end
 
       def dispatch(&response)
-        if verify_access_token?
-          @http_code = 201
-          @message = 'Successfully verified token and user'
+        return success(status: :created, &response) if verify_access_token?
 
-          return success(&response)
-        end
-
-        @http_code = 422
-        add_error(code: :failed, message: 'Could not verify token')
+        add_error(code: :unauthorized, message: 'Could not verify token')
         error(&response)
       end
 
@@ -36,7 +30,7 @@ module UseCases
 
         true
       rescue JWT::DecodeError, JWT::VerificationError
-        # You may log these errors
+        # We may log these errors
         false
       end
 

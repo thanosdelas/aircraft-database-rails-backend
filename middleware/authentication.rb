@@ -25,8 +25,8 @@ module Middleware
 
       verify_token = ::UseCases::Authentication::VerifyAccessToken.new(access_token: access_token)
 
-      verify_token.dispatch do |_http_status, data|
-        return true if data[:status] == 'success'
+      verify_token.dispatch do |status, _|
+        return true if status == :created
       end
 
       false
