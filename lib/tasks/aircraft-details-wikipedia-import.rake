@@ -1,6 +1,18 @@
 # frozen_string_literal: true
 
 namespace :aircraft do
+  desc "Remove HTML from saved data"
+  task remove_html_from_saved_data: :environment do
+    require 'nokogiri'
+
+    aircraft_list = ::Aircraft.where(wikipedia_info_collected: true)
+
+    aircraft_list.each do |aircraft|
+      aircraft.infobox_json = Nokogiri::HTML(aircraft.infobox_json).text
+      aircraft.featured_image = Nokogiri::HTML(aircraft.featured_image).text
+      aircraft.save
+    end
+  end
 
   desc "Delete Images"
   task delete_images: :environment do
@@ -60,6 +72,8 @@ namespace :aircraft do
 
   desc "Search wikipedia by aircraft model and save data for later inpesction"
   task wikipedia_details_import: :environment do
+    require 'nokogiri'
+
     # Use to debug SQL queries
     # ActiveRecord::Base.logger = Logger.new(STDOUT)
 
@@ -85,12 +99,12 @@ namespace :aircraft do
 
       summary = wikipedia.summary
       infobox_raw = wikipedia.infobox_raw
-      infobox_json = wikipedia.infobox_hash.to_json
+      infobox_json = Nokogiri::HTML(wikipedia.infobox_hash.to_json).text
 
       # NOTE: Featured images are not always saved inside images.
       #       Find a way to retrieve featured image information, and save it to images.
       #       images.map { |entry| entry[:filename] }.include?(featured_image)
-      featured_image = wikipedia.featured_image
+      featured_image = Nokogiri::HTML(wikipedia.featured_image).text
       images = wikipedia.find_images
 
       # Assign details to model
