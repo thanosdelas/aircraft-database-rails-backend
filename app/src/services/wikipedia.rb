@@ -2,6 +2,7 @@
 
 require 'json'
 require 'net/http'
+require 'nokogiri'
 
 module Services
   class Wikipedia
@@ -53,8 +54,10 @@ module Services
       end
 
       @infobox_raw = data['query']['pages'][@search_result['pageid'].to_s]['revisions'].first['slots']['main']['*']
+      @infobox_raw = Nokogiri::HTML(@infobox_raw).text
+
       @infobox_hash = infobox_raw_to_hash(@infobox_raw)
-      @featured_image = @infobox_hash['image']
+      @featured_image = Nokogiri::HTML(@infobox_hash['image']).text
 
       true
     end

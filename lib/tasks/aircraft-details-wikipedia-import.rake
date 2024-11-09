@@ -1,6 +1,80 @@
 # frozen_string_literal: true
 
 namespace :aircraft do
+  desc "Extract types from saved infobox"
+  task extract_and_save_types_from_saved_infobox: :environment do
+    types = []
+
+    wikipedia = ::Services::Wikipedia.new
+
+    aircraft_all = ::Aircraft.where.not(infobox_json: nil)
+
+    aircraft_all.each do |aircraft|
+      infobox_hash = JSON.parse(aircraft['infobox_json'])
+
+      next if infobox_hash['type'].blank?
+
+      matches = infobox_hash['type'].scan(/\[\[(.*?)\]\]/)
+      matches.each do |words_matched|
+        words_matched.each do |type|
+          words = type.split('|')
+          words.each do |word|
+            types.push(word.strip.gsub(/ +/, ' ').titleize)
+          end
+        end
+      end
+    end
+
+    types = types.uniq.sort
+
+    # Save aggregated aircraft types to a json for inspection.
+    File.open(Rails.root.join('tmp', 'aircraft-types.json'), 'w') do |file|
+      file.write(types.uniq.sort.to_json)
+    end
+
+    # Save aggregated aircraft types to the database.
+    types.each do |type|
+      create_type = ::Type.new(aircraft_type: type)
+      create_type.save
+    end
+  end
+
+  desc "Attach aircraft to aircraft types"
+  task attach_aircraft_to_aircraft_types: :environment do
+    types_all = ::Type.all
+
+    aircraft_all = ::Aircraft.where.not(infobox_json: nil)
+
+    aircraft_all.each do |aircraft|
+      infobox_hash = JSON.parse(aircraft['infobox_json'])
+
+      next if infobox_hash['type'].blank?
+
+      matches = infobox_hash['type'].scan(/\[\[(.*?)\]\]/)
+      matches.each do |words_matched|
+        words_matched.each do |type|
+          words = type.split('|')
+          words.each do |word|
+            current_aircraft_type = word.strip.gsub(/ +/, ' ').titleize
+
+            find_type = types_all.find do |saved_type|
+              saved_type['aircraft_type'] == current_aircraft_type
+            end
+
+            if find_type.nil?
+              puts "\nDid not find any match in database types for type: #{current_aircraft_type}"
+
+              next
+            end
+
+            aircraft_type = ::AircraftType.new(aircraft: aircraft, type: find_type)
+            aircraft_type.save
+          end
+        end
+      end
+    end
+  end
+
   desc "Remove HTML from saved data"
   task remove_html_from_saved_data: :environment do
     require 'nokogiri'
@@ -8,7 +82,13 @@ namespace :aircraft do
     aircraft_list = ::Aircraft.where(wikipedia_info_collected: true)
 
     aircraft_list.each do |aircraft|
-      aircraft.infobox_json = Nokogiri::HTML(aircraft.infobox_json).text
+      infobox_json = JSON.parse(aircraft.infobox_json)
+      infobox_json.each do |key, value|
+        infobox_json[key] = Nokogiri::HTML(value).text
+      end
+
+      aircraft.infobox_json = infobox_json.to_json
+      aircraft.infobox_raw = Nokogiri::HTML(aircraft.infobox_raw).text
       aircraft.featured_image = Nokogiri::HTML(aircraft.featured_image).text
       aircraft.save
     end
@@ -72,8 +152,6 @@ namespace :aircraft do
 
   desc "Search wikipedia by aircraft model and save data for later inpesction"
   task wikipedia_details_import: :environment do
-    require 'nokogiri'
-
     # Use to debug SQL queries
     # ActiveRecord::Base.logger = Logger.new(STDOUT)
 
@@ -99,12 +177,12 @@ namespace :aircraft do
 
       summary = wikipedia.summary
       infobox_raw = wikipedia.infobox_raw
-      infobox_json = Nokogiri::HTML(wikipedia.infobox_hash.to_json).text
+      infobox_json = wikipedia.infobox_hash.to_json
 
       # NOTE: Featured images are not always saved inside images.
       #       Find a way to retrieve featured image information, and save it to images.
       #       images.map { |entry| entry[:filename] }.include?(featured_image)
-      featured_image = Nokogiri::HTML(wikipedia.featured_image).text
+      featured_image = wikipedia.featured_image
       images = wikipedia.find_images
 
       # Assign details to model

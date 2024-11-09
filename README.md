@@ -29,6 +29,17 @@ and visit or make a GET request at `http://localhost:3000/api/aircraft`, to incr
 
 An aircraft without details yet is not visible on the public API.
 
+
+After the import has finished, you can aggregate and insert aircraft types with:
+```
+bundle exec rake aircraft:extract_and_save_types_from_saved_infobox
+```
+
+Then you can attach aircraft to aircraft types with:
+```
+bundle exec rake aircraft:attach_aircraft_to_aircraft_types
+```
+
 ### Authentication
 
 To access the admin API, you have to obtain an access token by issuing a POST request at:
