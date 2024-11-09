@@ -173,7 +173,9 @@ module Services
         next if image['imageinfo'].length != 1 ||
                 /.svg/i.match(image['imageinfo'][0]['url']) ||
                 /.tif/i.match(image['imageinfo'][0]['url']) ||
+                /.gif/i.match(image['imageinfo'][0]['url']) ||
                 /.ogv/i.match(image['imageinfo'][0]['url']) ||
+                /.ogg/i.match(image['imageinfo'][0]['url']) ||
                 /.webm/i.match(image['imageinfo'][0]['url']) ||
                 /flag/i.match(image['imageinfo'][0]['url']) ||
                 /edit/i.match(image['imageinfo'][0]['url']) ||
