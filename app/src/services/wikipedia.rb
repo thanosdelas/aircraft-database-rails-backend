@@ -66,7 +66,7 @@ module Services
       # subtrings that start and end with the same characters {{ }}.
       # \{\{([^{}]*|(?R))*\}\}
       regex = /\{\{Infobox([^{}]*|#{Regexp.union(/\{\{[^{}]*\}\}/).source})*\}\}/
-      find_infobox = data[regex, 0]
+      find_infobox = infobox_raw[regex, 0]
 
       return image if find_infobox.nil?
 

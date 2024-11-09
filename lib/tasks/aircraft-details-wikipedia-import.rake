@@ -1,6 +1,44 @@
 # frozen_string_literal: true
 
 namespace :aircraft do
+  # NOTE: Experimental. Can be used multiple times, after wikipedia_details_import is run.
+  #       to replace the model name with an exact match from wikipedia. eg.:
+  #       Search term provided to wikipedia is:
+  #       "General Dynamics F-16 Fighting Falcon, multirole fighter (Originally General Dynamics)"
+  #       but the wikipedia title found is:
+  #       "General Dynamics F-16 Fighting Falcon"
+  desc "Replace aircraft model with saved wikipedia title"
+  task replace_aircraft_model_with_saved_wikipedia_title: :environment do
+    abort('Disabled')
+
+    aircraft_list = ::Aircraft.where(wikipedia_info_collected: true)
+
+    collect_mismatches = []
+
+    aircraft_list.each do |aircraft|
+      if aircraft.wikipedia_title != aircraft.model
+        collect_mismatches.push({
+          searched: aircraft.model,
+          found: aircraft.wikipedia_title
+        })
+
+        puts "Replacing: #{aircraft.model} with #{aircraft.wikipedia_title}"
+        aircraft.model = aircraft.wikipedia_title
+
+        begin
+          aircraft.save
+        rescue ActiveRecord::RecordNotUnique
+          images = ::AircraftImage.where(aircraft_id: aircraft.id)
+          images.each do |image|
+            image.delete
+          end
+
+          aircraft.delete
+        end
+      end
+    end
+  end
+
   desc "Search wikipedia by aircraft model and save data for later inpesction"
   task wikipedia_details_import: :environment do
     # Use to debug SQL queries
@@ -9,6 +47,8 @@ namespace :aircraft do
     wikipedia = ::Services::Wikipedia.new
 
     aircraft_list = ::Aircraft.where(wikipedia_info_collected: false)
+
+    aircraft_list = ::Aircraft.where(wikipedia_info_collected: true, model: 'Lockheed C-5 Galaxy')
 
     #
     # Fetch and import
@@ -27,8 +67,11 @@ namespace :aircraft do
       summary = wikipedia.summary
       infobox_raw = wikipedia.infobox_raw
       infobox_json = wikipedia.infobox_hash.to_json
-      featured_image = wikipedia.featured_image
 
+      # NOTE: Featured images are not always saved inside images.
+      #       Find a way to retrieve featured image information, and save it to images.
+      #       images.map { |entry| entry[:filename] }.include?(featured_image)
+      featured_image = wikipedia.featured_image
       images = wikipedia.find_images
 
       # Assign details to model
