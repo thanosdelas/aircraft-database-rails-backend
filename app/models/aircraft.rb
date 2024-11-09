@@ -5,7 +5,8 @@ class Aircraft < ApplicationRecord
 
   has_many :images, class_name: 'AircraftImage', dependent: :restrict_with_error
 
-  validates :model, presence: true, allow_nil: false
+  has_many :aircraft_types, class_name: 'AircraftType', dependent: :restrict_with_error
+  has_many :types, class_name: 'Type', through: :aircraft_types, dependent: :restrict_with_error
 
-  default_scope { order(id: :asc) }
+  validates :model, presence: true, allow_nil: false
 end
