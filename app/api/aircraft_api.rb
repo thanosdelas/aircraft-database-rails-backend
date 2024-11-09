@@ -15,7 +15,12 @@ class AircraftAPI < Grape::API
 
     route_param :id do
       get do
-        aircraft = JSON.parse(::Aircraft.includes(:images).find_by(id: params[:id]).to_json(include: :images))
+        aircraft = JSON.parse(
+          ::Aircraft.includes(:types)
+                    .includes(:images)
+                    .find_by(id: params[:id])
+                    .to_json(include: [:types, :images])
+        )
 
         render_response(status_code: :ok, data: aircraft)
       end
