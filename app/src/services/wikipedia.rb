@@ -171,6 +171,10 @@ module Services
         next if urls_only.include?(image['imageinfo'][0]['url']) # Skip duplicate URLs
 
         next if image['imageinfo'].length != 1 ||
+                /.svg/i.match(image['imageinfo'][0]['url']) ||
+                /.tif/i.match(image['imageinfo'][0]['url']) ||
+                /.ogv/i.match(image['imageinfo'][0]['url']) ||
+                /.webm/i.match(image['imageinfo'][0]['url']) ||
                 /flag/i.match(image['imageinfo'][0]['url']) ||
                 /edit/i.match(image['imageinfo'][0]['url']) ||
                 /commons-logo/i.match(image['imageinfo'][0]['url']) ||
@@ -181,7 +185,8 @@ module Services
                 /support_vote/i.match(image['imageinfo'][0]['url']) ||
                 /Wiki_letter/i.match(image['imageinfo'][0]['url']) ||
                 /Aviacionavion/i.match(image['imageinfo'][0]['url']) ||
-                /video_camera/i.match(image['imageinfo'][0]['url'])
+                /video_camera/i.match(image['imageinfo'][0]['url']) ||
+                /Maple Leaf (from roundel)/i.match(image['imageinfo'][0]['url'])
 
         urls_only.push(image['imageinfo'][0]['url'])
 

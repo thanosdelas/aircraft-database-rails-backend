@@ -1,6 +1,25 @@
 # frozen_string_literal: true
 
 namespace :aircraft do
+
+  desc "Delete Images"
+  task delete_images: :environment do
+    require_relative './data/images-to-delete.rb'
+
+    IMAGES_TO_DELETE.each do |image_to_delete|
+      images = ::AircraftImage.where(
+        'filename LIKE :image_to_delete',
+        {
+          image_to_delete: "%#{ ::AircraftImage.sanitize_sql_like(image_to_delete) }%"
+        }
+      )
+
+      images.each do |image|
+        image.delete
+      end
+    end
+  end
+
   # NOTE: Experimental. Can be used multiple times, after wikipedia_details_import is run.
   #       to replace the model name with an exact match from wikipedia. eg.:
   #       Search term provided to wikipedia is:
