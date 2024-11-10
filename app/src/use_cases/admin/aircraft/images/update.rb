@@ -97,8 +97,10 @@ module UseCases
             true
           end
 
+          # NOTE: Since all images are retrieved from Wikipedia, providing an empty array is valid,
+          #       which leads to delete all images for the provided entity.
           def verify_images?
-            if @images.blank? || !@images.is_a?(Array)
+            if !@images.is_a?(Array)
               add_error(code: :failed, message: 'Could not update images')
 
               return false
