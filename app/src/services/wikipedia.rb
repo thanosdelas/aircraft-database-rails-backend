@@ -93,10 +93,10 @@ module Services
       image
     end
 
-    def infobox_raw_to_hash(data) # rubocop:disable Metrics/AbcSize
+    def infobox_raw_to_hash(infobox_raw) # rubocop:disable Metrics/AbcSize
       infobox_hash = {}
 
-      aircraft_infobox = data[/{{Infobox(.*?)}}/m, 1]
+      aircraft_infobox = extract_infobox(infobox_raw)
 
       return infobox_hash if aircraft_infobox.nil?
 
@@ -115,6 +115,41 @@ module Services
       end
 
       infobox_hash
+    end
+
+    def extract_infobox(infobox_raw)
+      start_index = infobox_raw.index('{{Infobox')
+
+      return nil if start_index.nil?
+
+      current_index = start_index + 9
+      nested_level = 0 # Infobox is at nested level 0
+
+      current_index = current_index + 1
+      while infobox_raw[current_index] != nil
+        if current_index + 1 == infobox_raw.length && nested_level == 0
+          raise 'Reached the end of the string. Provided infobox raw is missing closing double curly braces.'
+        end
+
+        # Check for nested opening {{
+        if infobox_raw[current_index] == '{' && infobox_raw[current_index + 1] == '{'
+          nested_level += 1
+        end
+
+        # Check for nested closing {{
+        if infobox_raw[current_index] == '}' && infobox_raw[current_index + 1] == '}'
+          if nested_level == 0
+            current_index = current_index + 1
+            break
+          end
+
+          nested_level -= 1
+        end
+
+        current_index = current_index + 1
+      end
+
+      infobox_raw[start_index..current_index]
     end
 
     def find_images
