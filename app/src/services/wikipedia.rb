@@ -167,6 +167,33 @@ module Services
       infoboxes
     end
 
+    def find_aircraft_types_in_infobox(infobox_hash)
+      matches = []
+      possible_infobox_keys = [
+        'type',
+        'aircraft_type',
+        'aircraft_role'
+      ]
+
+      # Parse only those wrapped in [[]]
+      possible_infobox_keys.each do |infobox_type_key|
+        current_matches = infobox_hash[infobox_type_key].scan(/\[\[(.*?)\]\]/) if !infobox_hash[infobox_type_key].nil?
+
+        matches = matches + current_matches if current_matches.is_a?(Array)
+      end
+
+      # Accept plain text, if there are no matches.
+      if matches.length == 0
+        possible_infobox_keys.each do |infobox_type_key|
+          current_matches = infobox_hash[infobox_type_key] if !infobox_hash[infobox_type_key].nil?
+
+          matches = matches + [[current_matches]] if current_matches.is_a?(String)
+        end
+      end
+
+      matches
+    end
+
     def find_images
       image_urls(image_filenames)
     end
