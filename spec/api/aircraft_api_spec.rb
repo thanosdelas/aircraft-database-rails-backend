@@ -35,25 +35,100 @@ RSpec.describe AircraftAPI do
 
   let(:path) { '/api/aircraft' }
 
-  before do
-    aircraft_a.images.new(images)
-
-    aircraft_a.save!
-    aircraft_b.save!
-  end
-
   describe 'GET /api/aircraft' do
     let(:params) { {} }
     let(:endpoint) { path }
 
-    it 'successfully fetches aircraft and responds with 201' do
-      get endpoint, params
+    context 'when no parameters are provided' do
+      before do
+        aircraft_a.save!
+        aircraft_b.save!
+      end
 
-      json = JSON.parse(last_response.body)
-      expect(json['data'].length).to eq 1
-      expect(json['data'][0]['model']).to eq 'Test aircraft model A'
-      expect(json['data'][0]['wikipedia_title']).to eq 'Test aircraft model A wikipedia title'
-      expect(json['data'][0]['featured_image']).to eq nil
+      it 'successfully fetches aircraft and responds with 200' do
+        get endpoint, params
+
+        expect(last_response.status).to eq(200)
+
+        json = JSON.parse(last_response.body)
+        expect(json['data'].length).to eq 1
+        expect(json['data'][0]['model']).to eq 'Test aircraft model A'
+        expect(json['data'][0]['wikipedia_title']).to eq 'Test aircraft model A wikipedia title'
+        expect(json['data'][0]['featured_image']).to eq nil
+      end
+    end
+
+    context 'when aircraft_type parameter is provided' do
+      let(:aircraft_types) do
+        [
+          'Business Jet',
+          'Utility Helicopter',
+          'Multirole Combat Aircraft',
+          'Fighter Aircraft',
+          'Transport',
+          'Airliner',
+          'Unmanned Combat Aerial Vehicle'
+        ]
+      end
+
+      let(:aircraft_a) do
+        ::Aircraft.new(
+          model: 'Test aircraft model A',
+          wikipedia_info_collected: true
+        )
+      end
+
+      let(:aircraft_b) do
+        ::Aircraft.new(
+          model: 'Test aircraft model B',
+          wikipedia_info_collected: true
+        )
+      end
+
+      let(:aircraft_c) do
+        ::Aircraft.new(
+          model: 'Test aircraft model C',
+          wikipedia_info_collected: true
+        )
+      end
+
+      let(:params) do
+        {
+          aircraft_type: 'Transport',
+          wikipedia_info_collected: true
+        }
+      end
+
+      before do
+        aircraft_types_created = []
+
+        aircraft_types.each do |type|
+          aircraft_type = ::Type.new(aircraft_type: type)
+          aircraft_type.save!
+
+          aircraft_types_created.push(aircraft_type)
+        end
+
+        aircraft_a.types.push(aircraft_types_created[0])
+        aircraft_a.types.push(aircraft_types_created[4])
+        aircraft_b.types.push(aircraft_types_created[1])
+        aircraft_c.types.push(aircraft_types_created[4])
+
+        aircraft_a.save!
+        aircraft_b.save!
+        aircraft_c.save!
+      end
+
+      it 'successfully filters aircraft and responds with 200' do
+        get endpoint, params
+
+        expect(last_response.status).to eq(200)
+
+        json = JSON.parse(last_response.body)
+        expect(json['data'].length).to eq 2
+        expect(json['data'][0]['model']).to eq 'Test aircraft model A'
+        expect(json['data'][1]['model']).to eq 'Test aircraft model C'
+      end
     end
   end
 
@@ -61,8 +136,17 @@ RSpec.describe AircraftAPI do
     let(:params) { {} }
     let(:endpoint) { "#{path}/#{aircraft_a.id}" }
 
-    it 'successfully fetches aircraft and responds with 201' do
+    before do
+      aircraft_a.images.new(images)
+
+      aircraft_a.save!
+      aircraft_b.save!
+    end
+
+    it 'successfully fetches aircraft and responds with 200' do
       get endpoint, params
+
+      expect(last_response.status).to eq(200)
 
       json = JSON.parse(last_response.body)
       expect(json['model']).to eq 'Test aircraft model A'

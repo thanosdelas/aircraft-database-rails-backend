@@ -7,6 +7,4 @@ class Type < ApplicationRecord
   has_many :aircraft, class_name: 'Aircraft', through: :aircraft_types, dependent: :restrict_with_error
 
   validates :aircraft_type, presence: true, allow_nil: false
-
-  default_scope { order(id: :asc) }
 end
