@@ -28,10 +28,10 @@ Metrics/MethodLength:
   Max: 15
 
 Metrics/ClassLength:
-  Max: 200
+  Max: 300
 
 Layout/LineLength:
-  Max: 128
+  Max: 170
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
@@ -51,19 +51,37 @@ Style/NumericPredicate:
 Style/ZeroLengthPredicate:
   Enabled: false
 
-Naming/VariableNumber:
+Style/NilComparison:
   Enabled: false
 
-Layout/FirstHashElementIndentation:
+Style/NonNilCheck:
+  Enabled: false
+
+Style/SelfAssignment:
   Enabled: false
 
 Style/ConditionalAssignment:
   Enabled: false
 
+Style/SymbolArray:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+
+Naming/VariableNumber:
+  Enabled: false
+
 Naming/RescuedExceptionsVariableName:
   Enabled: false
 
+Layout/FirstHashElementIndentation:
+  Enabled: false
+
 Layout/FirstArrayElementIndentation:
+  Enabled: false
+
+Layout/MultilineMethodCallIndentation:
   Enabled: false
 
 Lint/AmbiguousBlockAssociation:

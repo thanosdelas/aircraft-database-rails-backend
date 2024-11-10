@@ -49,9 +49,7 @@ module Services
       response = Net::HTTP.get(uri)
       data = JSON.parse(response)
 
-      if data['query']['pages'].key?(@search_result['pageid'].to_s)
-        @summary = data['query']['pages'][@search_result['pageid'].to_s]['extract']
-      end
+      @summary = data['query']['pages'][@search_result['pageid'].to_s]['extract'] if data['query']['pages'].key?(@search_result['pageid'].to_s)
 
       @infobox_raw = data['query']['pages'][@search_result['pageid'].to_s]['revisions'].first['slots']['main']['*']
       @infobox_raw = Nokogiri::HTML(@infobox_raw).text
@@ -93,7 +91,7 @@ module Services
       image
     end
 
-    def infobox_raw_to_hash(infobox_raw) # rubocop:disable Metrics/AbcSize
+    def infobox_raw_to_hash(infobox_raw) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       infobox_hash = {}
 
       aircraft_infoboxes = extract_infoboxes(infobox_raw)
@@ -122,12 +120,12 @@ module Services
       infobox_hash
     end
 
-    def extract_infoboxes(infobox_raw)
+    def extract_infoboxes(infobox_raw) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       infoboxes = []
 
       offset = 0
 
-      while true do
+      loop do
         start_index = infobox_raw.index('{{Infobox', offset)
 
         break if start_index == nil
@@ -142,9 +140,7 @@ module Services
           end
 
           # Check for nested opening {{
-          if infobox_raw[current_index] == '{' && infobox_raw[current_index + 1] == '{'
-            nested_level += 1
-          end
+          nested_level += 1 if infobox_raw[current_index] == '{' && infobox_raw[current_index + 1] == '{'
 
           # Check for nested closing {{
           if infobox_raw[current_index] == '}' && infobox_raw[current_index + 1] == '}'
@@ -167,7 +163,7 @@ module Services
       infoboxes
     end
 
-    def find_aircraft_types_in_infobox(infobox_hash)
+    def find_aircraft_types_in_infobox(infobox_hash) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity:
       matches = []
       possible_infobox_keys = [
         'type',

@@ -13,12 +13,11 @@ class AircraftTypesAPI < Grape::API
       #   GROUP BY types.id
       #   ORDER BY aircraft_count DESC
       # "
-      aircraft_types = ::Type
-        .select('
+      aircraft_types = ::Type.select('
           types.id,
           types.aircraft_type,
-          COUNT(aircraft_types.aircraft_id) AS aircraft_count'
-        )
+          COUNT(aircraft_types.aircraft_id) AS aircraft_count
+        ')
         .left_joins(:aircraft_types)
         .group('types.id')
         .order('aircraft_count DESC')

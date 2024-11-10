@@ -10,7 +10,8 @@ class AircraftAPI < Grape::API
                            .where(wikipedia_info_collected: true)
 
       if params.key?('aircraft_type')
-        aircraft = aircraft.joins(:types).where(types: {aircraft_type: params['aircraft_type']})
+        aircraft = aircraft.joins(:types)
+                           .where(types: { aircraft_type: params['aircraft_type'] })
       end
 
       data = {
