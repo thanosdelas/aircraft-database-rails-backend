@@ -55,7 +55,7 @@ module Services
       @infobox_raw = Nokogiri::HTML(@infobox_raw).text
 
       @infobox_hash = infobox_raw_to_hash(@infobox_raw)
-      @featured_image = Nokogiri::HTML(@infobox_hash['image']).text
+      @featured_image = Nokogiri::HTML(@infobox_hash['image']).text.gsub('{{!', '')
 
       true
     end
