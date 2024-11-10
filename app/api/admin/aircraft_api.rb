@@ -11,7 +11,7 @@ module Admin
           fetch_data = ::Aircraft.where(
             'LOWER(model) LIKE :search_term',
             {
-              search_term: "%#{::Aircraft.sanitize_sql_like(params[:search_term])}%"
+              search_term: "%#{::Aircraft.sanitize_sql_like(params[:search_term].strip.downcase)}%"
             }
           )
         else
