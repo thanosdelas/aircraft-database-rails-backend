@@ -27,6 +27,17 @@ module Admin
       end
 
       route_param :id do
+        get do
+          aircraft = JSON.parse(
+            ::Aircraft.includes(:types)
+                      .includes(:images)
+                      .find_by(id: params[:id])
+                      .to_json(include: [:types, :images])
+          )
+
+          render_response(status_code: :ok, data: aircraft)
+        end
+
         params do
           optional :title, type: String
           optional :description, type: String
