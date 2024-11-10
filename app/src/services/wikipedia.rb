@@ -96,60 +96,75 @@ module Services
     def infobox_raw_to_hash(infobox_raw) # rubocop:disable Metrics/AbcSize
       infobox_hash = {}
 
-      aircraft_infobox = extract_infobox(infobox_raw)
+      aircraft_infoboxes = extract_infoboxes(infobox_raw)
 
-      return infobox_hash if aircraft_infobox.nil?
+      return infobox_hash if aircraft_infoboxes.length == 0
 
-      infobox_entries = aircraft_infobox.split(/\n\s*\|/)
-      infobox_entries.shift
-      infobox_entries[infobox_entries.length - 1].gsub!("\n}}", '')
+      aircraft_infoboxes.each do |aircraft_infobox|
+        # Remove HTML from infobox string
+        aircraft_infobox = Nokogiri::HTML(aircraft_infobox).text
 
-      infobox_entries.each do |infobox_entry|
-        key, value = infobox_entry.split('=')
+        infobox_entries = aircraft_infobox.split(/\n\s*\|/)
+        infobox_entries.shift
+        infobox_entries[infobox_entries.length - 1].gsub!("\n}}", '')
 
-        value = '' if value.nil?
+        infobox_entries.each do |infobox_entry|
+          key, value = infobox_entry.split('=')
 
-        key = key.strip.squeeze(' ').gsub(/\s+/, '_').downcase
+          value = '' if value.nil?
 
-        infobox_hash[key] = value.gsub("\n", '').strip.squeeze(' ')
+          key = key.strip.squeeze(' ').gsub(/\s+/, '_').downcase
+
+          infobox_hash[key] = value.gsub("\n", '').strip.squeeze(' ')
+        end
       end
 
       infobox_hash
     end
 
-    def extract_infobox(infobox_raw)
-      start_index = infobox_raw.index('{{Infobox')
+    def extract_infoboxes(infobox_raw)
+      infoboxes = []
 
-      return nil if start_index.nil?
+      offset = 0
 
-      current_index = start_index + 9
-      nested_level = 0 # Infobox is at nested level 0
+      while true do
+        start_index = infobox_raw.index('{{Infobox', offset)
 
-      current_index = current_index + 1
-      while infobox_raw[current_index] != nil
-        if current_index + 1 == infobox_raw.length && nested_level == 0
-          raise 'Reached the end of the string. Provided infobox raw is missing closing double curly braces.'
-        end
+        break if start_index == nil
 
-        # Check for nested opening {{
-        if infobox_raw[current_index] == '{' && infobox_raw[current_index + 1] == '{'
-          nested_level += 1
-        end
-
-        # Check for nested closing {{
-        if infobox_raw[current_index] == '}' && infobox_raw[current_index + 1] == '}'
-          if nested_level == 0
-            current_index = current_index + 1
-            break
-          end
-
-          nested_level -= 1
-        end
+        current_index = start_index + 9
+        nested_level = 0 # Infobox is at nested level 0
 
         current_index = current_index + 1
+        while infobox_raw[current_index] != nil
+          if current_index + 1 == infobox_raw.length && nested_level == 0
+            raise 'Reached the end of the string. Provided infobox raw is missing closing double curly braces.'
+          end
+
+          # Check for nested opening {{
+          if infobox_raw[current_index] == '{' && infobox_raw[current_index + 1] == '{'
+            nested_level += 1
+          end
+
+          # Check for nested closing {{
+          if infobox_raw[current_index] == '}' && infobox_raw[current_index + 1] == '}'
+            if nested_level == 0
+              current_index = current_index + 1
+              break
+            end
+
+            nested_level -= 1
+          end
+
+          current_index = current_index + 1
+        end
+
+        infoboxes.push(infobox_raw[start_index..current_index])
+
+        offset = start_index + 1
       end
 
-      infobox_raw[start_index..current_index]
+      infoboxes
     end
 
     def find_images
