@@ -1,20 +1,33 @@
 # frozen_string_literal: true
 
 namespace :aircraft do
+  desc "Re-construct infobox JSON from infobox raw"
+  task reconstruct_infobox_json_from_infobox_raw: :environment do
+    wikipedia = ::Services::Wikipedia.new
+    aircraft_all = ::Aircraft.where.not(infobox_raw: nil)
+
+    aircraft_all.each do |aircraft|
+      infobox_hash = wikipedia.infobox_raw_to_hash(aircraft.infobox_raw)
+
+      aircraft.infobox_json = infobox_hash.to_json
+      aircraft.save
+    end
+  end
+
   desc "Extract types from saved infobox"
   task extract_and_save_types_from_saved_infobox: :environment do
     types = []
 
     wikipedia = ::Services::Wikipedia.new
-
     aircraft_all = ::Aircraft.where.not(infobox_json: nil)
 
     aircraft_all.each do |aircraft|
       infobox_hash = JSON.parse(aircraft['infobox_json'])
 
-      next if infobox_hash['type'].blank?
+      matches = wikipedia.find_aircraft_types_in_infobox(infobox_hash)
 
-      matches = infobox_hash['type'].scan(/\[\[(.*?)\]\]/)
+      next if matches.length == 0
+
       matches.each do |words_matched|
         words_matched.each do |type|
           words = type.split('|')
@@ -41,16 +54,17 @@ namespace :aircraft do
 
   desc "Attach aircraft to aircraft types"
   task attach_aircraft_to_aircraft_types: :environment do
+    wikipedia = ::Services::Wikipedia.new
     types_all = ::Type.all
-
     aircraft_all = ::Aircraft.where.not(infobox_json: nil)
 
     aircraft_all.each do |aircraft|
       infobox_hash = JSON.parse(aircraft['infobox_json'])
 
-      next if infobox_hash['type'].blank?
+      matches = wikipedia.find_aircraft_types_in_infobox(infobox_hash)
 
-      matches = infobox_hash['type'].scan(/\[\[(.*?)\]\]/)
+      next if matches.length == 0
+
       matches.each do |words_matched|
         words_matched.each do |type|
           words = type.split('|')
@@ -62,7 +76,7 @@ namespace :aircraft do
             end
 
             if find_type.nil?
-              puts "\nDid not find any match in database types for type: #{current_aircraft_type}"
+              puts "Did not find any match in database types for type: #{current_aircraft_type}"
 
               next
             end
