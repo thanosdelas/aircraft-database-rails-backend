@@ -46,10 +46,19 @@ namespace :aircraft do
     end
 
     # Save aggregated aircraft types to the database.
+    created_types = 0
     types.each do |type|
+      existing_type = ::Type.find_by(aircraft_type: type)
+
+      next if existing_type != nil
+
       create_type = ::Type.new(aircraft_type: type)
-      create_type.save
+      create_type.save!
+
+      created_types = created_types + 1
     end
+
+    puts "Done. Created #{created_types} aircraft types."
   end
 
   desc "Attach aircraft to aircraft types"
