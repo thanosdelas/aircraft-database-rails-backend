@@ -8,6 +8,7 @@ class AircraftAPI < Grape::API
     get do
       aircraft = ::Aircraft.select(:id, :model, :wikipedia_title, :featured_image)
                            .where(wikipedia_info_collected: true)
+                           .order(model: :asc)
 
       if params.key?('aircraft_type')
         aircraft = aircraft.joins(:types)
