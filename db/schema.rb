@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_10_232218) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_11_201220) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,6 +42,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_10_232218) do
     t.index ["filename"], name: "index_aircraft_images_on_filename"
   end
 
+  create_table "aircraft_manufacturers", force: :cascade do |t|
+    t.bigint "aircraft_id", null: false
+    t.bigint "manufacturer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["aircraft_id", "manufacturer_id"], name: "idx_on_aircraft_id_manufacturer_id_08ae9e99ec", unique: true
+    t.index ["aircraft_id"], name: "index_aircraft_manufacturers_on_aircraft_id"
+    t.index ["manufacturer_id"], name: "index_aircraft_manufacturers_on_manufacturer_id"
+  end
+
   create_table "aircraft_types", force: :cascade do |t|
     t.bigint "aircraft_id", null: false
     t.bigint "type_id", null: false
@@ -50,6 +60,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_10_232218) do
     t.index ["aircraft_id", "type_id"], name: "index_aircraft_types_on_aircraft_id_and_type_id", unique: true
     t.index ["aircraft_id"], name: "index_aircraft_types_on_aircraft_id"
     t.index ["type_id"], name: "index_aircraft_types_on_type_id"
+  end
+
+  create_table "manufacturers", force: :cascade do |t|
+    t.string "manufacturer", null: false
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["manufacturer"], name: "index_manufacturers_on_manufacturer", unique: true
   end
 
   create_table "types", force: :cascade do |t|
@@ -83,6 +101,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_10_232218) do
   end
 
   add_foreign_key "aircraft_images", "aircraft"
+  add_foreign_key "aircraft_manufacturers", "aircraft"
+  add_foreign_key "aircraft_manufacturers", "manufacturers"
   add_foreign_key "aircraft_types", "aircraft"
   add_foreign_key "aircraft_types", "types"
   add_foreign_key "users", "user_groups"
