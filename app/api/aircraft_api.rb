@@ -13,6 +13,16 @@ class AircraftAPI < Grape::API
       if params.key?('aircraft_type')
         aircraft = aircraft.joins(:types)
                            .where(types: { aircraft_type: params['aircraft_type'] })
+
+
+        ids = aircraft.pluck(:id)
+
+        aircraft = JSON.parse(
+          ::Aircraft.includes(:types)
+                    .includes(:images)
+                    .where(id: ids)
+                    .to_json(include: [:types, :images])
+        )
       end
 
       data = {
