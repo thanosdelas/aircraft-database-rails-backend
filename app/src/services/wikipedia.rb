@@ -24,7 +24,13 @@ module Services
       response = Net::HTTP.get(uri)
       data = JSON.parse(response)
 
-      @search_result = data['query']['search'][0] if data['query']['search'].length == 1
+      if data['query']['search'].length != 1
+        puts data.to_json
+
+        raise "Could not find a match for #{search_term}"
+      end
+
+      @search_result = data['query']['search'][0]
 
       @search_result
     end
