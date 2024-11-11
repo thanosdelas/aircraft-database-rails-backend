@@ -58,4 +58,22 @@ namespace :aircraft do
 
     puts "\nDone"
   end
+
+  desc "Import aircraft models"
+  task update_aircraft_models: :environment do
+    created = 0
+
+    AIRCRAFT_MODELS.each do |entry|
+      existing_aircraft = ::Aircraft.find_by(model: entry)
+
+      next if existing_aircraft != nil
+
+      row = Aircraft.new(model: entry)
+      row.save!
+
+      created = created + 1
+    end
+
+    puts "Done. Created #{created} aircraft"
+  end
 end

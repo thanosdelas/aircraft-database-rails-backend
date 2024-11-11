@@ -195,7 +195,9 @@ namespace :aircraft do
         puts result.to_json
         puts "\n\nThe wikipedia title found does match the provided model name: \nfound: #{result['title']} \nsearched: #{aircraft.model}\n\n"
 
-        if intersection.join(' ') == result['title'] || intersection.length >= 2
+        if intersection.join(' ') == result['title'] ||
+           intersection.length >= 2 ||
+           result['title'].downcase == aircraft.model.downcase
           puts "Intersection: #{intersection}. Replacing model name with wikipedia title: #{result['title']}"
           sleep 3
 
