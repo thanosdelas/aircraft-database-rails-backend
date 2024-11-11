@@ -90,6 +90,8 @@ namespace :aircraft do
               next
             end
 
+            next if aircraft.types.include?(find_type)
+
             aircraft_type = ::AircraftType.new(aircraft: aircraft, type: find_type)
             aircraft_type.save
           end
