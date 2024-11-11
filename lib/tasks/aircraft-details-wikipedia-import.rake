@@ -14,6 +14,95 @@ namespace :aircraft do
     end
   end
 
+  desc "Extract manufacturers from saved infobox"
+  task extract_and_save_manufacturers_from_saved_infobox: :environment do
+    manufacturers = []
+
+    wikipedia = ::Services::Wikipedia.new
+    aircraft_all = ::Aircraft.where.not(infobox_json: nil)
+
+    aircraft_all.each do |aircraft|
+      infobox_hash = JSON.parse(aircraft['infobox_json'])
+
+      matches = wikipedia.find_aircraft_manufacturers_in_infobox(infobox_hash)
+
+      next if matches.length == 0
+
+      matches.each do |words_matched|
+        words_matched.each do |manufacturer|
+          words = manufacturer.split('|')
+          words.each do |word|
+
+            next if word.include?('{{') || word.include?('}}')
+
+            manufacturers.push(word.strip.gsub(/ +/, ' ').titleize)
+          end
+        end
+      end
+    end
+
+    manufacturers = manufacturers.uniq.sort
+
+    # Save aggregated aircraft manufacturers to a json for inspection.
+    File.open(Rails.root.join('tmp', 'aircraft-manufacturers.json'), 'w') do |file|
+      file.write(manufacturers.uniq.sort.to_json)
+    end
+
+    # Save aggregated aircraft manufacturers to the database.
+    created_manufacturers = 0
+    manufacturers.each do |manufacturer|
+      existing_manufacturer = ::Manufacturer.find_by(manufacturer: manufacturer)
+
+      next if existing_manufacturer != nil
+
+      create_manufacturer = ::Manufacturer.new(manufacturer: manufacturer)
+      create_manufacturer.save!
+
+      created_manufacturers = created_manufacturers + 1
+    end
+
+    puts "Done. Created #{created_manufacturers} aircraft manufacturers."
+  end
+
+  desc "Attach aircraft to aircraft manufacturers"
+  task attach_aircraft_to_aircraft_manufacturers: :environment do
+    wikipedia = ::Services::Wikipedia.new
+    manufacturers_all = ::Manufacturer.all
+    aircraft_all = ::Aircraft.where.not(infobox_json: nil)
+
+    aircraft_all.each do |aircraft|
+      infobox_hash = JSON.parse(aircraft['infobox_json'])
+
+      matches = wikipedia.find_aircraft_manufacturers_in_infobox(infobox_hash)
+
+      next if matches.length == 0
+
+      matches.each do |words_matched|
+        words_matched.each do |manufacturer|
+          words = manufacturer.split('|')
+          words.each do |word|
+            current_aircraft_manufacturer = word.strip.gsub(/ +/, ' ').titleize
+
+            find_manufacturer = manufacturers_all.find do |saved_manufacturer|
+              saved_manufacturer['manufacturer'] == current_aircraft_manufacturer
+            end
+
+            if find_manufacturer.nil?
+              puts "Did not find any match in database manufacturers for manufacturer: #{current_aircraft_manufacturer}"
+
+              next
+            end
+
+            next if aircraft.manufacturers.include?(find_manufacturer)
+
+            aircraft_manufacturer = ::AircraftManufacturer.new(aircraft: aircraft, manufacturer: find_manufacturer)
+            aircraft_manufacturer.save
+          end
+        end
+      end
+    end
+  end
+
   desc "Extract types from saved infobox"
   task extract_and_save_types_from_saved_infobox: :environment do
     types = []

@@ -196,6 +196,34 @@ module Services
       matches
     end
 
+    def find_aircraft_manufacturers_in_infobox(infobox_hash) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity:
+      matches = []
+      possible_infobox_keys = [
+        'manufacturer',
+        'manufacturers',
+        'design_group',
+        'designer' # Designer may be different that manufacturers.
+      ]
+
+      # Parse only those wrapped in [[]]
+      possible_infobox_keys.each do |infobox_type_key|
+        current_matches = infobox_hash[infobox_type_key].scan(/\[\[(.*?)\]\]/) if !infobox_hash[infobox_type_key].nil?
+
+        matches = matches + current_matches if current_matches.is_a?(Array)
+      end
+
+      # Accept plain text, if there are no matches.
+      if matches.length == 0
+        possible_infobox_keys.each do |infobox_type_key|
+          current_matches = infobox_hash[infobox_type_key] if !infobox_hash[infobox_type_key].nil?
+
+          matches = matches + [[current_matches]] if current_matches.is_a?(String)
+        end
+      end
+
+      matches
+    end
+
     def find_images
       image_urls(image_filenames)
     end
