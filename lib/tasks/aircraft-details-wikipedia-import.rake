@@ -173,8 +173,6 @@ namespace :aircraft do
 
     aircraft_list = ::Aircraft.where(wikipedia_info_collected: false)
 
-    aircraft_list = ::Aircraft.where(wikipedia_info_collected: true, model: 'Lockheed C-5 Galaxy')
-
     #
     # Fetch and import
     #
@@ -189,6 +187,34 @@ namespace :aircraft do
         abort
       end
 
+      if result['title'] != aircraft.model
+        result_title_parts = result['title'].split(' ')
+        aircraft_model_parts = aircraft.model.split(' ')
+        intersection = result_title_parts & aircraft_model_parts
+
+        puts result.to_json
+        puts "\n\nThe wikipedia title found does match the provided model name: \nfound: #{result['title']} \nsearched: #{aircraft.model}\n\n"
+
+        if intersection.join(' ') == result['title'] || intersection.length >= 2
+          puts "Intersection: #{intersection}. Replacing model name with wikipedia title: #{result['title']}"
+          sleep 3
+
+          check_if_aircraft_exists = ::Aircraft.find_by(model: result['title'])
+          if !check_if_aircraft_exists.nil?
+            ::AircraftImage.where(aircraft_id: aircraft.id).delete_all
+            ::AircraftType.where(aircraft_id: aircraft.id).delete_all
+            aircraft.delete
+
+            next
+          end
+
+          # Replace model with found wikipedia title
+          aircraft.model = result['title']
+        else
+          raise 'The wikipedia title found is not equal to the intersection. Aborting'
+        end
+      end
+
       summary = wikipedia.summary
       infobox_raw = wikipedia.infobox_raw
       infobox_json = wikipedia.infobox_hash.to_json
@@ -201,6 +227,7 @@ namespace :aircraft do
 
       # Assign details to model
       aircraft.wikipedia_title = result['title']
+      aircraft.wikipedia_page_id = result['pageid']
       aircraft.snippet = result['snippet']
       aircraft.infobox_raw = infobox_raw if infobox_raw.present?
       aircraft.infobox_json = infobox_json if infobox_json.present?
