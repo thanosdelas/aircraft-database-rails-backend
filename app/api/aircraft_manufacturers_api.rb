@@ -6,11 +6,11 @@ class AircraftManufacturersAPI < Grape::API
       aircraft_manufacturers = ::Manufacturer.select('
           manufacturers.id,
           manufacturers.manufacturer,
-          COUNT(aircraft_manufacturers.aircraft_id) AS aircraft_manufacturer_count
+          COUNT(aircraft_manufacturers.aircraft_id) AS aircraft_count
         ')
         .left_joins(:aircraft_manufacturers)
         .group('manufacturers.id')
-        .order('aircraft_manufacturer_count DESC')
+        .order('aircraft_count DESC')
 
       data = {
         data: aircraft_manufacturers
