@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_11_201220) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_16_171724) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,6 +26,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_11_201220) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "wikipedia_page_id"
+    t.integer "first_flight_year"
+    t.date "first_flight"
+    t.string "first_flight_raw"
     t.index ["model"], name: "index_aircraft_on_model", unique: true
     t.index ["wikipedia_page_id"], name: "index_aircraft_on_wikipedia_page_id", unique: true
   end
