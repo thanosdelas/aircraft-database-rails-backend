@@ -16,7 +16,7 @@ module Services
         action: 'query',
         origin: '*',
         list: 'search',
-        srlimit: 1,
+        srlimit: 10,
         srsearch: search_term
       }
 
@@ -24,13 +24,20 @@ module Services
       response = Net::HTTP.get(uri)
       data = JSON.parse(response)
 
-      if data['query']['search'].length != 1
-        puts data.to_json
+      data['query']['search'].each do |result|
+        if result['title'].downcase == search_term.downcase
+          @search_result = result;
 
-        raise "Could not find a match for #{search_term}"
+          break;
+        end
       end
 
-      @search_result = data['query']['search'][0]
+      # TODO: Log error and data
+      # if @search_result.nil?
+      #   puts data.to_json
+
+      #   raise "Could not find a match for #{search_term}"
+      # end
 
       @search_result
     end
@@ -110,6 +117,9 @@ module Services
 
         infobox_entries = aircraft_infobox.split(/\n\s*\|/)
         infobox_entries.shift
+
+        next if infobox_entries.length == 0
+
         infobox_entries[infobox_entries.length - 1].gsub!("\n}}", '')
 
         infobox_entries.each do |infobox_entry|

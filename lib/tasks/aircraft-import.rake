@@ -59,7 +59,7 @@ namespace :aircraft do
     puts "\nDone"
   end
 
-  desc "Import aircraft models"
+  desc "Update aircraft models"
   task update_aircraft_models: :environment do
     created = 0
 

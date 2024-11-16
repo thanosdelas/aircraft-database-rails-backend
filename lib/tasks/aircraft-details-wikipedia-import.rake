@@ -279,6 +279,9 @@ namespace :aircraft do
     aircraft_list.each do |aircraft|
       puts "\n\n[*] Collecting information from Wikipedia for: #{aircraft.id}, #{aircraft.model}\n"
       result = wikipedia.search(aircraft.model)
+
+      raise "Could not find a match for #{aircraft.model}" if result.nil?
+
       snippet = result['snippet']
 
       # Fetch and parse infobox and summary
