@@ -6,46 +6,10 @@ class AircraftAPI < Grape::API
   end
   resource :aircraft do
     get do
-      aircraft = ::Aircraft.select(:id, :model, :wikipedia_title, :featured_image)
-                           .where(wikipedia_info_collected: true)
-                           .order(model: :asc)
-
-      if params.key?('manufacturer')
-        aircraft = aircraft.joins(:manufacturers)
-                           .where(manufacturers: { manufacturer: params['manufacturer'] })
-
-
-        ids = aircraft.pluck(:id)
-
-        aircraft = JSON.parse(
-          ::Aircraft.includes(:manufacturers)
-                    .includes(:types)
-                    .includes(:images)
-                    .where(id: ids)
-                    .to_json(include: [:manufacturers, :types, :images])
-        )
+      response = ::UseCases::Public::Aircraft::Fetch.new(parameters: params)
+      response.dispatch do |status_code, data|
+        render_response(status_code: status_code, data: data)
       end
-
-      if params.key?('aircraft_type')
-        aircraft = aircraft.joins(:types)
-                           .where(types: { aircraft_type: params['aircraft_type'] })
-
-
-        ids = aircraft.pluck(:id)
-
-        aircraft = JSON.parse(
-          ::Aircraft.includes(:types)
-                    .includes(:images)
-                    .where(id: ids)
-                    .to_json(include: [:types, :images])
-        )
-      end
-
-      data = {
-        data: aircraft
-      }
-
-      render_response(status_code: :ok, data: data)
     end
 
     route_param :id do
