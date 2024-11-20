@@ -10,7 +10,7 @@ module Services
 
     BASE_API_URL = 'https://en.wikipedia.org/w/api.php'
 
-    def search(search_term)
+    def search(search_term) # rubocop:disable Metrics/MethodLength
       params = {
         format: 'json',
         action: 'query',
@@ -25,11 +25,10 @@ module Services
       data = JSON.parse(response)
 
       data['query']['search'].each do |result|
-        if result['title'].downcase == search_term.downcase
-          @search_result = result;
+        next if result['title'].downcase != search_term.downcase
 
-          break;
-        end
+        @search_result = result
+        break
       end
 
       # TODO: Log error and data
