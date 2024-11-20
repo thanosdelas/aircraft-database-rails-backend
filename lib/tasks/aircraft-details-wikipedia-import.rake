@@ -1,6 +1,53 @@
 # frozen_string_literal: true
 
 namespace :aircraft do
+  desc "Extract fields from saved infobox"
+  task extract_and_save_fields_from_saved_infobox: :environment do
+    fields = []
+
+    aircraft_all = ::Aircraft.where("infobox_json LIKE '%first_flight%'")
+
+    # Possible keys to collect:
+    #
+    # national_origin
+    # first_flight
+    # introduction
+    # status
+    # retired
+    # number_built
+    # developed_from
+    # developed_into
+    # variants
+    # produced
+    # unit_cost
+    #
+    # collect_keys = []
+    # aircraft_all.each do |aircraft|
+    #   infobox_hash = JSON.parse(aircraft['infobox_json'])
+    #   collect_keys += infobox_hash.keys
+    # end
+    # collect_keys = collect_keys.uniq
+
+    aircraft_all.each do |aircraft|
+      infobox_hash = JSON.parse(aircraft['infobox_json'])
+
+      next if infobox_hash['first_flight'].nil?
+
+      year = infobox_hash['first_flight'].match(/\d{4}/)
+
+      if year.nil?
+        puts "Could not extract year from: #{infobox_hash['first_flight'].inspect}"
+
+        next
+      end
+
+      # aircraft.first_flight = Time.parse(infobox_hash['first_flight'])
+      aircraft.first_flight_year = year[0].to_i
+      aircraft.first_flight_raw = infobox_hash['first_flight']
+      aircraft.save
+    end
+  end
+
   desc "Re-construct infobox JSON from infobox raw"
   task reconstruct_infobox_json_from_infobox_raw: :environment do
     wikipedia = ::Services::Wikipedia.new
