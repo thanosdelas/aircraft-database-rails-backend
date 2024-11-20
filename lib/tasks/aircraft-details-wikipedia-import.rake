@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 namespace :aircraft do
-  desc "Extract fields from saved infobox"
+  desc 'Extract fields from saved infobox'
   task extract_and_save_fields_from_saved_infobox: :environment do
-    fields = []
-
     aircraft_all = ::Aircraft.where("infobox_json LIKE '%first_flight%'")
 
     # Possible keys to collect:
@@ -48,7 +46,7 @@ namespace :aircraft do
     end
   end
 
-  desc "Re-construct infobox JSON from infobox raw"
+  desc 'Re-construct infobox JSON from infobox raw'
   task reconstruct_infobox_json_from_infobox_raw: :environment do
     wikipedia = ::Services::Wikipedia.new
     aircraft_all = ::Aircraft.where.not(infobox_raw: nil)
@@ -61,7 +59,7 @@ namespace :aircraft do
     end
   end
 
-  desc "Extract manufacturers from saved infobox"
+  desc 'Extract manufacturers from saved infobox'
   task extract_and_save_manufacturers_from_saved_infobox: :environment do
     manufacturers = []
 
@@ -79,7 +77,6 @@ namespace :aircraft do
         words_matched.each do |manufacturer|
           words = manufacturer.split('|')
           words.each do |word|
-
             next if word.include?('{{') || word.include?('}}')
 
             manufacturers.push(word.strip.gsub(/ +/, ' ').titleize)
@@ -91,7 +88,7 @@ namespace :aircraft do
     manufacturers = manufacturers.uniq.sort
 
     # Save aggregated aircraft manufacturers to a json for inspection.
-    File.open(Rails.root.join('tmp', 'aircraft-manufacturers.json'), 'w') do |file|
+    File.open(Rails.root.join('tmp/aircraft-manufacturers.json'), 'w') do |file|
       file.write(manufacturers.uniq.sort.to_json)
     end
 
@@ -111,7 +108,7 @@ namespace :aircraft do
     puts "Done. Created #{created_manufacturers} aircraft manufacturers."
   end
 
-  desc "Attach aircraft to aircraft manufacturers"
+  desc 'Attach aircraft to aircraft manufacturers'
   task attach_aircraft_to_aircraft_manufacturers: :environment do
     wikipedia = ::Services::Wikipedia.new
     manufacturers_all = ::Manufacturer.all
@@ -150,7 +147,7 @@ namespace :aircraft do
     end
   end
 
-  desc "Extract types from saved infobox"
+  desc 'Extract types from saved infobox'
   task extract_and_save_types_from_saved_infobox: :environment do
     types = []
 
@@ -177,7 +174,7 @@ namespace :aircraft do
     types = types.uniq.sort
 
     # Save aggregated aircraft types to a json for inspection.
-    File.open(Rails.root.join('tmp', 'aircraft-types.json'), 'w') do |file|
+    File.open(Rails.root.join('tmp/aircraft-types.json'), 'w') do |file|
       file.write(types.uniq.sort.to_json)
     end
 
@@ -197,7 +194,7 @@ namespace :aircraft do
     puts "Done. Created #{created_types} aircraft types."
   end
 
-  desc "Attach aircraft to aircraft types"
+  desc 'Attach aircraft to aircraft types'
   task attach_aircraft_to_aircraft_types: :environment do
     wikipedia = ::Services::Wikipedia.new
     types_all = ::Type.all
@@ -236,7 +233,7 @@ namespace :aircraft do
     end
   end
 
-  desc "Remove HTML from saved data"
+  desc 'Remove HTML from saved data'
   task remove_html_from_saved_data: :environment do
     require 'nokogiri'
 
@@ -255,21 +252,19 @@ namespace :aircraft do
     end
   end
 
-  desc "Delete Images"
+  desc 'Delete Images'
   task delete_images: :environment do
-    require_relative './data/images-to-delete.rb'
+    require_relative './data/images-to-delete'
 
     IMAGES_TO_DELETE.each do |image_to_delete|
       images = ::AircraftImage.where(
         'filename LIKE :image_to_delete',
         {
-          image_to_delete: "%#{ ::AircraftImage.sanitize_sql_like(image_to_delete) }%"
+          image_to_delete: "%#{::AircraftImage.sanitize_sql_like(image_to_delete)}%"
         }
       )
 
-      images.each do |image|
-        image.delete
-      end
+      images.each(&:delete)
     end
   end
 
@@ -279,39 +274,39 @@ namespace :aircraft do
   #       "General Dynamics F-16 Fighting Falcon, multirole fighter (Originally General Dynamics)"
   #       but the wikipedia title found is:
   #       "General Dynamics F-16 Fighting Falcon"
-  desc "Replace aircraft model with saved wikipedia title"
+  desc 'Replace aircraft model with saved wikipedia title'
   task replace_aircraft_model_with_saved_wikipedia_title: :environment do
     abort('Disabled')
 
+    # rubocop:disable Lint/UnreachableCode
     aircraft_list = ::Aircraft.where(wikipedia_info_collected: true)
 
     collect_mismatches = []
 
     aircraft_list.each do |aircraft|
-      if aircraft.wikipedia_title != aircraft.model
-        collect_mismatches.push({
-          searched: aircraft.model,
-          found: aircraft.wikipedia_title
-        })
+      next unless aircraft.wikipedia_title != aircraft.model
 
-        puts "Replacing: #{aircraft.model} with #{aircraft.wikipedia_title}"
-        aircraft.model = aircraft.wikipedia_title
+      collect_mismatches.push({
+        searched: aircraft.model,
+        found: aircraft.wikipedia_title
+      })
 
-        begin
-          aircraft.save
-        rescue ActiveRecord::RecordNotUnique
-          images = ::AircraftImage.where(aircraft_id: aircraft.id)
-          images.each do |image|
-            image.delete
-          end
+      puts "Replacing: #{aircraft.model} with #{aircraft.wikipedia_title}"
+      aircraft.model = aircraft.wikipedia_title
 
-          aircraft.delete
-        end
+      begin
+        aircraft.save
+      rescue ActiveRecord::RecordNotUnique
+        images = ::AircraftImage.where(aircraft_id: aircraft.id)
+        images.each(&:delete)
+
+        aircraft.delete
       end
     end
+    # rubocop:enable Lint/UnreachableCode
   end
 
-  desc "Search wikipedia by aircraft model and save data for later inpesction"
+  desc 'Search wikipedia by aircraft model and save data for later inpesction'
   task wikipedia_details_import: :environment do
     # Use to debug SQL queries
     # ActiveRecord::Base.logger = Logger.new(STDOUT)
@@ -329,11 +324,9 @@ namespace :aircraft do
 
       raise "Could not find a match for #{aircraft.model}" if result.nil?
 
-      snippet = result['snippet']
-
       # Fetch and parse infobox and summary
       unless wikipedia.fetch_page_details
-        puts "[!] Could not find wikipedia page details; aborting."
+        puts '[!] Could not find wikipedia page details; aborting.'
         abort
       end
 
@@ -386,23 +379,20 @@ namespace :aircraft do
       aircraft.featured_image = featured_image if featured_image.present?
       aircraft.description = summary if summary.present?
 
-      puts "[*] Wikipedia details fetched; importing ..."
+      puts '[*] Wikipedia details fetched; importing ...'
 
       # Skip existing images. Note that the same image is allowed
       # for different aircraft (unique key combination: url, aircraft_id).
       # BUG: There are results on wikipedia that may have same url for different
       #      image filenames. Make them unique before saving images.
-      existing_image_urls = aircraft.images.to_a.map { |i| i.url }
+      existing_image_urls = aircraft.images.to_a.map(&:url)
       images.each do |image|
         next if existing_image_urls.include?(image[:url])
-
-        image = aircraft.images.build(image)
       end
 
       begin
         aircraft.save!
         aircraft.update!(wikipedia_info_collected: true)
-
       rescue ActiveRecord::RecordInvalid => error
         puts "\n\n[!] Failed with error: #{error.inspect}"
         puts "\n\nWhile importing images for aircraft with id: #{aircraft.id}, and model: #{aircraft.model}\n\n"

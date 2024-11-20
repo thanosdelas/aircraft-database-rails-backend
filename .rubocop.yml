@@ -23,6 +23,7 @@ Metrics/BlockLength:
   Max: 150
   Exclude:
     - spec/**/*
+    - lib/**/*
 
 Metrics/MethodLength:
   Max: 15
