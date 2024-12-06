@@ -31,6 +31,30 @@ begin
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
+
+TYPES = [
+  'Airliner',
+  'Business Jet',
+  'Trainer',
+  'Transport'
+].freeze
+
+MANUFACTURERS = [
+  'Airbus',
+  'Boeing',
+  'Antonov',
+  'Beechcraft',
+  'Canadair',
+  'Lockheed',
+  'McDonnell',
+  'North American',
+  'Northrop',
+  'Sukhoi',
+  'Tupolev',
+  'Beriev',
+  'AgustaWestland'
+].freeze
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
@@ -64,29 +88,6 @@ RSpec.configure do |config|
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   # config.use_transactional_fixtures = true
-
-  TYPES = [
-    'Airliner',
-    'Business Jet',
-    'Trainer',
-    'Transport'
-  ]
-
-  MANUFACTURERS = [
-    'Airbus',
-    'Boeing',
-    'Antonov',
-    'Beechcraft',
-    'Canadair',
-    'Lockheed',
-    'McDonnell',
-    'North American',
-    'Northrop',
-    'Sukhoi',
-    'Tupolev',
-    'Beriev',
-    'AgustaWestland'
-  ]
 
   config.before(:each) do
     DatabaseCleaner.strategy = :transaction
