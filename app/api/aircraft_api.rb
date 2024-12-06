@@ -16,9 +16,10 @@ class AircraftAPI < Grape::API
       get do
         aircraft = JSON.parse(
           ::Aircraft.includes(:types)
+                    .includes(:manufacturers)
                     .includes(:images)
                     .find_by(id: params[:id])
-                    .to_json(include: [:types, :images])
+                    .to_json(include: [:types, :manufacturers, :images])
         )
 
         render_response(status_code: :ok, data: aircraft)
