@@ -26,7 +26,7 @@ Metrics/BlockLength:
     - lib/**/*
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
 
 Metrics/ClassLength:
   Max: 300
@@ -83,6 +83,12 @@ Layout/FirstArrayElementIndentation:
   Enabled: false
 
 Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
+Layout/ArgumentAlignment:
+  Enabled: false
+
+Layout/MultilineMethodCallBraceLayout:
   Enabled: false
 
 Lint/AmbiguousBlockAssociation:

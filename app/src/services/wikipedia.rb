@@ -10,7 +10,7 @@ module Services
 
     BASE_API_URL = 'https://en.wikipedia.org/w/api.php'
 
-    def search(search_term) # rubocop:disable Metrics/MethodLength
+    def search(search_term)
       params = {
         format: 'json',
         action: 'query',
@@ -72,7 +72,7 @@ module Services
       true
     end
 
-    def extract_featured_image_from_infobox(infobox_raw) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def extract_featured_image_from_infobox(infobox_raw) # rubocop:disable Metrics/AbcSize
       image = ''
 
       # The following regular expression matches anything between {{ }}, but ignores
@@ -103,7 +103,7 @@ module Services
       image
     end
 
-    def infobox_raw_to_hash(infobox_raw) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def infobox_raw_to_hash(infobox_raw) # rubocop:disable Metrics/AbcSize
       infobox_hash = {}
 
       aircraft_infoboxes = extract_infoboxes(infobox_raw)
@@ -178,7 +178,7 @@ module Services
       infoboxes
     end
 
-    def find_aircraft_types_in_infobox(infobox_hash) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity:
+    def find_aircraft_types_in_infobox(infobox_hash) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity:
       matches = []
       possible_infobox_keys = [
         'type',
@@ -205,7 +205,7 @@ module Services
       matches
     end
 
-    def find_aircraft_manufacturers_in_infobox(infobox_hash) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity:
+    def find_aircraft_manufacturers_in_infobox(infobox_hash) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity:
       matches = []
       possible_infobox_keys = [
         'manufacturer',
@@ -239,7 +239,7 @@ module Services
 
     private
 
-    def image_filenames # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def image_filenames # rubocop:disable Metrics/AbcSize
       images = []
 
       params = {

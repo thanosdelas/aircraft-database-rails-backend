@@ -48,7 +48,7 @@ module UseCases
 
           # TODO: - Collect and return errors
           #       - Avoid n+1 queries
-          def save_images? # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+          def save_images? # rubocop:disable Metrics/AbcSize
             ::AircraftImage.transaction do
               image_urls_to_delete.each do |image_url|
                 ::AircraftImage.where(url: image_url).destroy_all

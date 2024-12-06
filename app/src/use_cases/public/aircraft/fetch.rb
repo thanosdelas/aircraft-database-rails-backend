@@ -20,7 +20,7 @@ module UseCases
           'Tupolev',
           'Beriev',
           'AgustaWestland'
-        ]
+        ].freeze
 
         def initialize(parameters:)
           super()
@@ -74,6 +74,7 @@ module UseCases
           }
         end
 
+        # rubocop:disable Metrics/AbcSize
         def fetch_aircraft_by_manufacturer_from_model_field
           colelct_groups = []
 
@@ -100,6 +101,7 @@ module UseCases
 
           colelct_groups
         end
+        # rubocop:enable Metrics/AbcSize
 
         def fetch_aircraft
           aircraft = ::Aircraft.select(@fields)
