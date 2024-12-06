@@ -14,8 +14,15 @@ end
 
 FactoryBot.define do
   factory :aircraft_manufacturer do
-    aircraft { "" }
-    manufacturer { "" }
+    aircraft { nil }
+    manufacturer { nil }
+  end
+end
+
+FactoryBot.define do
+  factory :aircraft_type do
+    aircraft { nil }
+    aircraft_type { nil }
   end
 end
 
@@ -26,12 +33,17 @@ FactoryBot.define do
     wikipedia_info_collected { true }
 
     after(:create) do |aircraft, evaluator|
+      if evaluator.types.present?
+        aircraft.types = Type.where(aircraft_type: evaluator.types)
+      end
+
       if evaluator.manufacturers.present?
         aircraft.manufacturers = Manufacturer.where(manufacturer: evaluator.manufacturers)
       end
     end
 
     transient do
+      types { [] }
       manufacturers { [] }
     end
   end

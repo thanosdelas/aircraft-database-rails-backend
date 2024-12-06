@@ -65,25 +65,36 @@ RSpec.configure do |config|
   # instead of true.
   # config.use_transactional_fixtures = true
 
+  TYPES = [
+    'Airliner',
+    'Business Jet',
+    'Trainer',
+    'Transport'
+  ]
+
+  MANUFACTURERS = [
+    'Airbus',
+    'Boeing',
+    'Antonov',
+    'Beechcraft',
+    'Canadair',
+    'Lockheed',
+    'McDonnell',
+    'North American',
+    'Northrop',
+    'Sukhoi',
+    'Tupolev',
+    'Beriev',
+    'AgustaWestland'
+  ]
+
   config.before(:each) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
 
-    MANUFACTURERS = [
-      'Airbus',
-      'Boeing',
-      'Antonov',
-      'Beechcraft',
-      'Canadair',
-      'Lockheed',
-      'McDonnell',
-      'North American',
-      'Northrop',
-      'Sukhoi',
-      'Tupolev',
-      'Beriev',
-      'AgustaWestland'
-    ]
+    TYPES.each do |aircraft_type|
+      FactoryBot.create(:type, aircraft_type: aircraft_type)
+    end
 
     MANUFACTURERS.each do |manufacturer|
       FactoryBot.create(:manufacturer, manufacturer: manufacturer)
