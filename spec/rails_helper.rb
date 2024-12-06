@@ -35,8 +35,13 @@ end
 TYPES = [
   'Airliner',
   'Business Jet',
+  'Utility Helicopter',
+  'Multirole Combat Aircraft',
+  'Fighter Aircraft',
+  'Transport',
   'Trainer',
-  'Transport'
+  'Unmanned Combat Aerial Vehicle'
+
 ].freeze
 
 MANUFACTURERS = [
@@ -89,7 +94,7 @@ RSpec.configure do |config|
   # instead of true.
   # config.use_transactional_fixtures = true
 
-  config.before(:each) do
+  config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
 
@@ -102,7 +107,13 @@ RSpec.configure do |config|
     end
   end
 
-  config.after(:each) do
+  config.after(:suite) do
     DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 end
