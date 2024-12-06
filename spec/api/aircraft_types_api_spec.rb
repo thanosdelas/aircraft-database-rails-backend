@@ -6,55 +6,31 @@ RSpec.describe AircraftTypesAPI do
   include Rack::Test::Methods
 
   let(:endpoint_path) { '/api/aircraft-types' }
+  let(:params) { {} }
 
-  let(:aircraft_types) do
-    [
-      'Business Jet',
-      'Utility Helicopter',
-      'Multirole Combat Aircraft',
-      'Fighter Aircraft',
-      'Transport',
-      'Airliner',
-      'Unmanned Combat Aerial Vehicle'
-    ]
-  end
-
-  let(:aircraft_a) do
-    ::Aircraft.new(
-      model: 'Test aircraft model A'
+  let!(:aircraft_a) do
+    FactoryBot.create(:aircraft,
+      model: 'Airbus Aircraft A Model',
+      first_flight_year: 1956,
+      manufacturers: ['Airbus', 'Antonov'],
+      types: ['Airliner']
     )
   end
 
-  let(:aircraft_b) do
-    ::Aircraft.new(
-      model: 'Test aircraft model B'
+  let!(:aircraft_b) do
+    FactoryBot.create(:aircraft,
+      model: 'Boeing Aircraft B Model',
+      first_flight_year: 1970,
+      manufacturers: ['Boeing'],
+      types: ['Airliner', 'Business Jet']
     )
   end
 
-  let(:aircraft_c) do
-    ::Aircraft.new(
-      model: 'Test aircraft model C'
+  let!(:aircraft_c) do
+    FactoryBot.create(:aircraft,
+      model: 'Antonov Aircraft C Model',
+      first_flight_year: 1985
     )
-  end
-
-  before do
-    aircraft_types_created = []
-
-    aircraft_types.each do |type|
-      aircraft_type = ::Type.new(aircraft_type: type)
-      aircraft_type.save!
-
-      aircraft_types_created.push(aircraft_type)
-    end
-
-    aircraft_a.types.push(aircraft_types_created[0])
-    aircraft_a.types.push(aircraft_types_created[4])
-    aircraft_b.types.push(aircraft_types_created[4])
-    aircraft_c.types.push(aircraft_types_created[4])
-
-    aircraft_a.save!
-    aircraft_b.save!
-    aircraft_c.save!
   end
 
   describe 'GET /api/aircraft-types' do
@@ -68,12 +44,21 @@ RSpec.describe AircraftTypesAPI do
 
       data = JSON.parse(last_response.body)['data']
 
-      expect(data.length).to eq 7
-      expect(data[0]['aircraft_type']).to eq 'Transport'
-      expect(data[0]['aircraft_count']).to eq 3
+      expect(data.length).to eq 8
+      expect(data[0]['aircraft_type']).to eq 'Airliner'
+      expect(data[0]['aircraft_count']).to eq 2
 
       expect(data[1]['aircraft_type']).to eq 'Business Jet'
       expect(data[1]['aircraft_count']).to eq 1
+
+      current_index = 2
+      AIRCRAFT_TYPES.each do |aircraft_type|
+        next if aircraft_type == 'Airliner' || aircraft_type == 'Business Jet'
+
+        expect(data[current_index]['aircraft_count']).to eq 0
+
+        current_index += 1
+      end
     end
   end
 end

@@ -35,9 +35,21 @@ FactoryBot.define do
     after(:create) do |aircraft, evaluator|
       aircraft.types = Type.where(aircraft_type: evaluator.types) if evaluator.types.present?
       aircraft.manufacturers = Manufacturer.where(manufacturer: evaluator.manufacturers) if evaluator.manufacturers.present?
+
+      if evaluator.images.present?
+        aircraft_images = []
+
+        evaluator.images.each do |image|
+          aircraft_images.push(::AircraftImage.new(image))
+        end
+
+        aircraft.images = aircraft_images
+        aircraft.save!
+      end
     end
 
     transient do
+      images { [] }
       types { [] }
       manufacturers { [] }
     end

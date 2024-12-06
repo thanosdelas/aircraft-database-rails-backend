@@ -32,7 +32,7 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 
-TYPES = [
+AIRCRAFT_TYPES = [
   'Airliner',
   'Business Jet',
   'Utility Helicopter',
@@ -98,7 +98,7 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
 
-    TYPES.each do |aircraft_type|
+    AIRCRAFT_TYPES.each do |aircraft_type|
       FactoryBot.create(:type, aircraft_type: aircraft_type)
     end
 
