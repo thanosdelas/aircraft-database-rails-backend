@@ -65,14 +65,32 @@ RSpec.configure do |config|
   # instead of true.
   # config.use_transactional_fixtures = true
 
-  config.before(:suite) do
+  config.before(:each) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
+
+    MANUFACTURERS = [
+      'Airbus',
+      'Boeing',
+      'Antonov',
+      'Beechcraft',
+      'Canadair',
+      'Lockheed',
+      'McDonnell',
+      'North American',
+      'Northrop',
+      'Sukhoi',
+      'Tupolev',
+      'Beriev',
+      'AgustaWestland'
+    ]
+
+    MANUFACTURERS.each do |manufacturer|
+      FactoryBot.create(:manufacturer, manufacturer: manufacturer)
+    end
   end
 
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
+  config.after(:each) do
+    DatabaseCleaner.clean_with(:truncation)
   end
 end
