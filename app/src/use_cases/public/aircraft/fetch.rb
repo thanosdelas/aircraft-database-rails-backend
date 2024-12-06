@@ -63,9 +63,9 @@ module UseCases
         #       aircraft.maximum(:first_flight_year)
         def first_flight_year_bounds
           if @ids.length > 0
-            year_min, year_max = ::Aircraft.where(id: @ids).pick('MIN(first_flight_year) as year_min, MAX(first_flight_year) AS year_max').first
+            year_min, year_max = ::Aircraft.where(id: @ids).pick('MIN(first_flight_year) as year_min, MAX(first_flight_year) AS year_max')
           else
-            year_min, year_max = ::Aircraft.pick('MIN(first_flight_year) as year_min, MAX(first_flight_year) AS year_max').first
+            year_min, year_max = ::Aircraft.pick('MIN(first_flight_year) as year_min, MAX(first_flight_year) AS year_max')
           end
 
           {
