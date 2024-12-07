@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_28_165702) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_07_105451) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -65,12 +65,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_28_165702) do
     t.index ["type_id"], name: "index_aircraft_types_on_type_id"
   end
 
+  create_table "manufacturer_groups", force: :cascade do |t|
+    t.string "manufacturer_group", null: false
+    t.string "description"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["manufacturer_group"], name: "index_manufacturer_groups_on_manufacturer_group", unique: true
+  end
+
   create_table "manufacturers", force: :cascade do |t|
     t.string "manufacturer", null: false
     t.string "description"
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.bigint "manufacturer_group_id"
     t.index ["manufacturer"], name: "index_manufacturers_on_manufacturer", unique: true
+    t.index ["manufacturer_group_id"], name: "index_manufacturers_on_manufacturer_group_id"
   end
 
   create_table "types", force: :cascade do |t|
@@ -108,5 +118,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_28_165702) do
   add_foreign_key "aircraft_manufacturers", "manufacturers"
   add_foreign_key "aircraft_types", "aircraft"
   add_foreign_key "aircraft_types", "types"
+  add_foreign_key "manufacturers", "manufacturer_groups"
   add_foreign_key "users", "user_groups"
 end

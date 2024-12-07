@@ -1,6 +1,104 @@
 # frozen_string_literal: true
 
 namespace :aircraft do
+  desc 'Extract manufacturer groups'
+  task extract_manufacturer_groups: :environment do
+    manufacturers = ::Manufacturer.all.to_a
+
+    manufacturers.each do |manufacturer|
+      manufacturer.manufacturer_group_id = nil
+      manufacturer.save!
+    end
+
+    ::ManufacturerGroup.all.to_a.each do |group|
+      group.delete
+    end
+
+    manufacturer_groups = [
+      "Airbus",
+      "Bell",
+      "Boeing",
+      "Bombardier",
+      "Comac",
+      "Dassault Aviation",
+      "Embraer",
+      "Gulfstream Aerospace",
+      "Honda Aircraft Company",
+      "Kawasaki",
+      "Lockheed Martin",
+      "Mc Donnell Douglas",
+      "Mitsubishi Heavy Industries",
+      "North American",
+      "Northrop Grumman",
+      "Pilatus Aircraft",
+      "Textron Aviation",
+      "Tupolev",
+      "United Aircraft Corporation",
+      "Viking Air",
+      "Vought",
+      "Antonov",
+      "Cessna",
+      "Cirrus Aircraft",
+      "Diamond Aircraft Industries",
+      "Fairchild Dornier",
+      "Fokker",
+      "General Dynamics",
+      "General Atomics",
+      "Hughes",
+      "Ilyushin",
+      "Sukhoi",
+      "Yakolev",
+      "Raytheon",
+      "Short",
+      "Yakovlev",
+      "Mikoyan",
+      "Kaman",
+      "Tupolev",
+      "Beriev",
+      "Ilyushin",
+      "BAE Systems",
+      "Rockwell",
+      "Beechcraft",
+      "Kamov",
+      "Agusta Westland",
+      "Saab",
+      "Alenia",
+      "British Aerospace",
+      "Canadair",
+      "Chengdu",
+      "De Havilland",
+      "Dornier",
+      "Eurofighter",
+      "Fairchild Aircraft"
+    ]
+
+    collect_groups = {}
+    manufacturer_groups.each do |manufacturer_group|
+      collect_groups[manufacturer_group] = []
+    end
+
+    manufacturers.each do |manufacturer|
+      manufacturer_groups.each do |manufacturer_group|
+        if manufacturer.manufacturer.downcase.include?(manufacturer_group.downcase)
+          collect_groups[manufacturer_group].push(manufacturer)
+        end
+      end
+    end
+
+    collect_groups.keys.each do |group_key|
+      puts "#{group_key} => #{collect_groups[group_key].length}"
+
+      manufacturers = collect_groups[group_key].map { |e| e.manufacturer }
+      manufacturer_group = ::ManufacturerGroup.new(manufacturer_group: group_key, description: manufacturers.to_s)
+      manufacturer_group.save!
+
+      collect_groups[group_key].each do |manufacturer|
+        manufacturer.manufacturer_group = manufacturer_group
+        manufacturer.save!
+      end
+    end
+  end
+
   desc 'Extract fields from saved infobox'
   task extract_and_save_fields_from_saved_infobox: :environment do
     aircraft_all = ::Aircraft.where("infobox_json LIKE '%first_flight%'")
