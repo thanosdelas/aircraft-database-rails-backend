@@ -53,7 +53,7 @@ RSpec.describe AircraftTypesAPI do
 
       current_index = 2
       AIRCRAFT_TYPES.each do |aircraft_type|
-        next if aircraft_type == 'Airliner' || aircraft_type == 'Business Jet'
+        next if ['Airliner', 'Business Jet'].include?(aircraft_type)
 
         expect(data[current_index]['aircraft_count']).to eq 0
 

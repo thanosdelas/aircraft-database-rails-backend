@@ -3,20 +3,10 @@
 class AircraftManufacturersAPI < Grape::API
   resource :'aircraft-manufacturers' do
     get do
-      aircraft_manufacturers = ::Manufacturer.select('
-          manufacturers.id,
-          manufacturers.manufacturer,
-          COUNT(aircraft_manufacturers.aircraft_id) AS aircraft_count
-        ')
-        .left_joins(:aircraft_manufacturers)
-        .group('manufacturers.id')
-        .order('aircraft_count DESC')
-
-      data = {
-        data: aircraft_manufacturers
-      }
-
-      render_response(status_code: :ok, data: data)
+      response = ::UseCases::Public::Aircraft::Manufacturer.new(parameters: params)
+      response.dispatch do |status_code, data|
+        render_response(status_code: status_code, data: data)
+      end
     end
   end
 end

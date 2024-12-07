@@ -44,9 +44,21 @@ AIRCRAFT_TYPES = [
 
 ].freeze
 
-MANUFACTURERS = [
+MANUFACTURER_GROUPS = [
   'Airbus',
   'Boeing',
+  'Bell'
+].freeze
+
+MANUFACTURERS = [
+  'Airbus',
+  'Airbus Helicopters',
+  'Airbus Defence And Space',
+  'Bell Aircraft',
+  'Bell Helicopter',
+  'Boeing',
+  'Boeing Helicopters',
+  'Boeing Commercial Airplanes',
   'Antonov',
   'Beechcraft',
   'Canadair',
@@ -102,8 +114,17 @@ RSpec.configure do |config|
       FactoryBot.create(:type, aircraft_type: aircraft_type)
     end
 
+    MANUFACTURER_GROUPS.each do |manufacturer_group|
+      FactoryBot.create(:manufacturer_group, manufacturer_group: manufacturer_group)
+    end
+
     MANUFACTURERS.each do |manufacturer|
-      FactoryBot.create(:manufacturer, manufacturer: manufacturer)
+      manufacturer_group = nil
+      manufacturer_group = 'Airbus' if manufacturer.include?('Airbus')
+      manufacturer_group = 'Boeing' if manufacturer.include?('Boeing')
+      manufacturer_group = 'Bell' if manufacturer.include?('Bell')
+
+      FactoryBot.create(:manufacturer, manufacturer: manufacturer, manufacturer_group_string: manufacturer_group)
     end
   end
 
