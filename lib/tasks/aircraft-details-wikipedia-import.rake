@@ -495,6 +495,8 @@ namespace :aircraft do
       existing_image_urls = aircraft.images.to_a.map(&:url)
       images.each do |image|
         next if existing_image_urls.include?(image[:url])
+
+        image = aircraft.images.build(image)
       end
 
       begin
