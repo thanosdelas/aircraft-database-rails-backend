@@ -29,6 +29,7 @@ gem 'bcrypt'
 gem 'rack-cors'
 gem 'jwt'
 gem 'nokogiri'
+gem 'googleauth'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
