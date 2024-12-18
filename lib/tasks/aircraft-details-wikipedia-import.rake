@@ -462,7 +462,8 @@ namespace :aircraft do
           # Replace model with found wikipedia title
           aircraft.model = result['title']
         else
-          raise 'The wikipedia title found is not equal to the intersection. Aborting'
+          puts "[!] The wikipedia title found is not equal to the intersection. Ignoring: #{aircraft.model}"
+          next
         end
       end
 
