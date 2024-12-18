@@ -32,7 +32,7 @@ Metrics/ClassLength:
   Max: 300
 
 Layout/LineLength:
-  Max: 170
+  Enabled: false
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: never

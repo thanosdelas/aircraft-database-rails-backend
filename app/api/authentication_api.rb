@@ -13,6 +13,13 @@ class AuthenticationAPI < BaseAPI
       end
     end
 
+    post 'login/google' do
+      response = ::UseCases::Authentication::LoginGoogle.new(googleauth_credential: params[:googleauth_credential])
+      response.dispatch do |status_code, data|
+        render_response(status_code: status_code, data: data)
+      end
+    end
+
     params do
       requires :access_token, type: String
     end

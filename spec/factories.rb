@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
+  factory :user do
+    email { nil }
+    password { nil }
+  end
+end
+
+FactoryBot.define do
   factory :manufacturer_group do
     manufacturer_group { nil }
   end
