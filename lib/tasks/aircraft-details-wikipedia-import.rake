@@ -511,7 +511,7 @@ namespace :aircraft do
 
       puts "[*] Saved.\n\n"
 
-      puts "\n\n[i] There have been #{aircraft_import_counter} imported from #{aircraft_list_length}" if aircraft_import_counter % 10 == 0
+      puts "\n\n   [i] Imported #{aircraft_import_counter} from #{aircraft_list_length}" if aircraft_import_counter % 5 == 0
     end
   end
 end
