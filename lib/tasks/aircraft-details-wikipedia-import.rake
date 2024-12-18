@@ -413,6 +413,10 @@ namespace :aircraft do
 
     aircraft_list = ::Aircraft.where(wikipedia_info_collected: false).order(created_at: :asc)
 
+    aircraft_import_counter = 0
+    aircraft_list_length = aircraft_list.length
+    puts "\n\n[*]Going to collect and import #{aircraft_list_length} from #{::Aircraft.count} total.\n"
+
     #
     # Fetch and import
     #
@@ -495,6 +499,7 @@ namespace :aircraft do
       begin
         aircraft.save!
         aircraft.update!(wikipedia_info_collected: true)
+        aircraft_import_counter += 1
       rescue ActiveRecord::RecordInvalid => error
         puts "\n\n[!] Failed with error: #{error.inspect}"
         puts "\n\nWhile importing images for aircraft with id: #{aircraft.id}, and model: #{aircraft.model}\n\n"
@@ -504,6 +509,8 @@ namespace :aircraft do
       end
 
       puts "[*] Saved.\n\n"
+
+      puts "\n\n[i] There have been #{aircraft_import_counter} imported from #{aircraft_list_length}" if aircraft_import_counter % 10 == 0
     end
   end
 end
