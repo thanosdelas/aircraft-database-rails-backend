@@ -31,26 +31,8 @@ namespace :aircraft do
     puts "\nDone"
   end
 
-  desc "Import a small sample of aircraft models for testing"
-  task import_test_data: :environment do
-    ::AircraftImage.delete_all
-    ::Aircraft.delete_all
-
-    aircraft_models = AIRCRAFT_MODELS.first
-
-    aircraft_models.each do |entry|
-      row = Aircraft.new(model: entry)
-      row.save
-    end
-
-    puts "\nDone"
-  end
-
   desc "Import aircraft models"
   task import_aircraft_models: :environment do
-    ::AircraftImage.delete_all
-    ::Aircraft.delete_all
-
     AIRCRAFT_MODELS.each do |entry|
       row = Aircraft.new(model: entry)
       row.save
