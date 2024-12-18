@@ -411,7 +411,7 @@ namespace :aircraft do
 
     wikipedia = ::Services::Wikipedia.new
 
-    aircraft_list = ::Aircraft.where(wikipedia_info_collected: false)
+    aircraft_list = ::Aircraft.where(wikipedia_info_collected: false).order(created_at: :asc)
 
     #
     # Fetch and import
@@ -420,7 +420,11 @@ namespace :aircraft do
       puts "\n\n[*] Collecting information from Wikipedia for: #{aircraft.id}, #{aircraft.model}\n"
       result = wikipedia.search(aircraft.model)
 
-      raise "Could not find a match for #{aircraft.model}" if result.nil?
+      if result.nil?
+        puts "\n\nCould not find a match for #{aircraft.model}\n\n"
+
+        next
+      end
 
       # Fetch and parse infobox and summary
       unless wikipedia.fetch_page_details
