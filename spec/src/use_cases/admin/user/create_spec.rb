@@ -43,6 +43,10 @@ RSpec.describe ::UseCases::Admin::User::Create do
         let(:email) { 'test@example.com' }
         let(:password) { 'test' }
 
+        before do
+          ::UserGroup.find_by(group: 'user').delete
+        end
+
         it 'returns a successful response with no errors' do
           subject.dispatch(&render_response)
 
