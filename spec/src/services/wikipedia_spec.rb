@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-# rubocop:disable Layout/TrailingWhitespace, Layout/LineLength, Style/MultilineBlockChain
+# rubocop:disable Layout/TrailingWhitespace Style/MultilineBlockChain
 RSpec.describe ::Services::Wikipedia do
   subject do
     described_class.new
@@ -270,4 +270,4 @@ RSpec.describe ::Services::Wikipedia do
     end
   end
 end
-# rubocop:enable Layout/TrailingWhitespace, Layout/LineLength, Style/MultilineBlockChain
+# rubocop:enable Layout/TrailingWhitespace

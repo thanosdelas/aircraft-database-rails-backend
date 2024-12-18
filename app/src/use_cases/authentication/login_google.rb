@@ -7,6 +7,9 @@ module UseCases
     class LoginGoogle < ::UseCases::Base
       attr_reader :status, :googleauth_credential, :payload, :user, :access_token, :data
 
+      # To be extracted into config
+      GOOGLE_CLIENT_ID = '1094984630998-kuso8ldhr1c5321mgdlsthbc22tiio8j.apps.googleusercontent.com'
+
       def initialize(googleauth_credential:)
         super()
 
@@ -14,68 +17,89 @@ module UseCases
       end
 
       def dispatch(&response)
-        if @googleauth_credential.blank?
-          add_error(code: :unauthorized, message: 'Authentication failed')
-          return error(&response)
-        end
+        return error(&response) if !googleauth_credential_provided?
+        return error(&response) if !verify_googleauth_credential?
+        return error(&response) if !email_verified?
+        return error(&response) if !fetch_or_create_user?
+        return error(&response) if !generate_access_token?
 
-        key_source = Google::Auth::IDTokens::JwkHttpKeySource.new('https://www.googleapis.com/oauth2/v3/certs')
-        verifier = Google::Auth::IDTokens::Verifier.new(key_source: key_source)
+        @data = {
+          access_token: @access_token
+        }
 
-        begin
-          @payload = verifier.verify(@googleauth_credential, aud: '1094984630998-kuso8ldhr1c5321mgdlsthbc22tiio8j.apps.googleusercontent.com')
-        rescue Google::Auth::IDTokens::VerificationError => e
-          Rails.logger.warn "Token verification failed: #{e.message}"
-          add_error(code: :unauthorized, message: 'Authentication failed')
-          return error(&response)
-        end
-
-        if !verify_user?
-          add_error(code: :unauthorized, message: 'Authentication failed')
-          return error(&response)
-        end
-
-        if generate_access_token?
-          @data = {
-            access_token: @access_token
-          }
-
-          return success(status: :created, &response)
-        end
-
-        add_error(code: :unauthorized, message: 'Authentication failed')
-        error(&response)
+        success(status: :created, &response)
       end
 
       private
 
-      def verify_user?
-        existing_user = User.find_by(email: @payload['email'])
+      def googleauth_credential_provided?
+        return true if @googleauth_credential.present?
 
-        if existing_user.nil?
-          @user = ::User.new(email: @payload['email'], google_sub: @payload['sub'])
-          @user.group = ::UserGroup.find_by(group: 'user')
+        add_error(code: :unauthorized, message: 'Authentication failed')
+        false
+      end
 
-          return true if @user.save
+      def verify_googleauth_credential?
+        begin
+          @payload = googleauth_verifier.verify(@googleauth_credential, aud: GOOGLE_CLIENT_ID)
 
-          Rails.logger.warn "Could not save user: #{@user.inspect} from payload: #{@payload.inspect}"
-          return false
+          return true
+        rescue Google::Auth::IDTokens::VerificationError => e
+          Rails.logger.warn "Token verification failed: #{e.message}"
+          add_error(code: :unauthorized, message: 'Authentication failed')
         end
 
-        if existing_user.google_sub == nil
-          existing_user.google_sub = @payload['sub']
-          existing_user.password_digest = nil
+        false
+      end
 
-          if existing_user.save
-            @user = existing_user
+      def email_verified?
+        return true if @payload['email_verified'] == true
 
-            return true
-          end
+        Rails.logger.warn "Email from payload is not verified: #{@payload.inspect}"
+        add_error(code: :unauthorized, message: 'Authentication failed')
+        false
+      end
 
-          Rails.logger.warn "Could not save existing user: #{@user.inspect} from payload: #{@payload.inspect}"
-          return false
+      def googleauth_verifier
+        return @googleauth_verifier if instance_variable_defined? :@googleauth_verifier
+
+        key_source = Google::Auth::IDTokens::JwkHttpKeySource.new('https://www.googleapis.com/oauth2/v3/certs')
+
+        @googleauth_verifier = Google::Auth::IDTokens::Verifier.new(key_source: key_source)
+      end
+
+      def fetch_or_create_user?
+        @user = User.find_by(email: @payload['email'])
+
+        return create_user? if @user.nil?
+
+        return true if @user.google_sub == @payload['sub']
+
+        set_existing_user_sub_and_remove_password?
+      end
+
+      def create_user?
+        @user = ::User.new(email: @payload['email'], google_sub: @payload['sub'])
+        @user.group = ::UserGroup.find_by(group: 'user')
+
+        return true if @user.save
+
+        Rails.logger.warn "Could not create user: #{@user.inspect} from payload: #{@payload.inspect}"
+        add_error(code: :unauthorized, message: 'Authentication failed')
+        false
+      end
+
+      def set_existing_user_sub_and_remove_password?
+        @user.google_sub = @payload['sub']
+        @user.password_digest = nil
+
+        if @user.save
+          Rails.logger.info "Successfully updated sub and removed password for existing user: #{@user.inspect} from payload: #{@payload.inspect}"
+          return true
         end
 
+        Rails.logger.warn "Could not save existing user: #{@user.inspect} from payload: #{@payload.inspect}"
+        add_error(code: :unauthorized, message: 'Authentication failed')
         false
       end
 

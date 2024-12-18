@@ -150,9 +150,7 @@ module Services
 
         current_index = current_index + 1
         while infobox_raw[current_index] != nil
-          if current_index + 1 == infobox_raw.length && nested_level == 0
-            raise 'Reached the end of the string. Provided infobox raw is missing closing double curly braces.'
-          end
+          raise 'Reached the end of the string. Provided infobox raw is missing closing double curly braces.' if current_index + 1 == infobox_raw.length && nested_level == 0
 
           # Check for nested opening {{
           nested_level += 1 if infobox_raw[current_index] == '{' && infobox_raw[current_index + 1] == '{'

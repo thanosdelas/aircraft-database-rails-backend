@@ -13,10 +13,6 @@ RSpec.describe User, type: :model do
     )
   end
 
-  before do
-    create_user_groups
-  end
-
   context 'when user can be created' do
     let(:email) { 'test@exmple.com' }
     let(:password) { 'test' }
@@ -28,7 +24,7 @@ RSpec.describe User, type: :model do
       user = User.find_by(email: subject.email)
 
       expect(user).to have_attributes({
-        user_group_id: 300,
+        user_group_id: 200,
         email: email
       })
 

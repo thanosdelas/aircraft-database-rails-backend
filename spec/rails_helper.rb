@@ -110,6 +110,14 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
 
+    [
+      { id: 100, group: 'admin' },
+      { id: 200, group: 'user' },
+      { id: 300, group: 'guest' }
+    ].each do |group|
+      UserGroup.find_or_create_by!(id: group[:id], group: group[:group])
+    end
+
     AIRCRAFT_TYPES.each do |aircraft_type|
       FactoryBot.create(:type, aircraft_type: aircraft_type)
     end
