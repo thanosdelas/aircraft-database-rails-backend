@@ -80,4 +80,5 @@ group :test do
   # gem "capybara"
   # gem "selenium-webdriver"
   gem 'database_cleaner-active_record'
+  gem 'webmock'
 end
